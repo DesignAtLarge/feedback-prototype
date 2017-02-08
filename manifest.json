@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+
+  "name": "Feedback Prototype",
+  "description": "Suggests previous gradescope comments for feedback",
+  "version": "2.0",
+
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "identity",
+    "https://spreadsheets.google.com/feeds/"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://gradescope.com/*/questions/*/submissions/*/grade"],
+      "js": ["jquery-2.2.2.min.js", "content_script.js"],
+      "css": ["suggestions.css"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "oauth2": {
+    "client_id": "429303545529-bag73oigjvq64981cd2f0rvvqbbekbqe.apps.googleusercontent.com", // debug
+    //"client_id": "429303545529-hq5ehbbgd6quoa2qneg2q3icqfjj50kg.apps.googleusercontent.com", //published
+    "scopes": [
+      "https://spreadsheets.google.com/feeds"
+    ]
+  },
+  "web_accessible_resources": ["button.png"]
+}

@@ -1,0 +1,52 @@
+.btn:hover {
+  cursor: pointer;
+  background-color: #5eff5b;
+  border-radius: 10px;
+}
+
+.btn {
+  vertical-align: top;
+}
+
+#example_btn {
+  vertical-align: middle !important;
+}
+
+.comment td{
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.blank {
+  cursor: pointer;
+}
+
+.suggestion_header {
+  font-weight: 700;
+  line-height: 2;
+  border-top: 1px solid gray;
+  margin-top:5px;
+  font-size: 15px;
+}
+
+#first_header {
+  border: none !important;
+}
+
+#suggestion_box {
+  border: 1px solid #004ea3 !important;
+  height: 250px;
+  overflow-y: scroll;
+  background-color: rgba(74,74,74,0.03) !important;
+}
+
+#sugg_insts {
+  font-size: 13px !important;
+  margin-top: 2px;
+}
+
+#search_text {
+  width: 100% !important;
+  border: 1px solid gray !important;
+  padding: 3px;
+}
