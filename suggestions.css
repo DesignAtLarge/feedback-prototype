@@ -29,11 +29,11 @@
   font-size: 15px;
 }
 
-#first_header {
+.first_header {
   border: none !important;
 }
 
-#suggestion_box {
+.suggestion_box {
   border: 1px solid #004ea3 !important;
   height: 250px;
   overflow-y: scroll;
@@ -45,8 +45,15 @@
   margin-top: 2px;
 }
 
-#search_text {
+.search_text {
   width: 100% !important;
   border: 1px solid gray !important;
   padding: 3px;
+}
+
+.see_suggestions {
+  font-size: 14px !important;
+  color: darkred !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
 }

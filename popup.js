@@ -1,4 +1,5 @@
 var user_id;
+var always_show;
 var feedback_sheet_id = "196vCHcg9O1mR9jYQLeo-jF1PAkbK0VRAHdSlf4ngEZM";
 var feedback;
 
@@ -49,5 +50,42 @@ function sendTAFeedback() {
 document.addEventListener('DOMContentLoaded', function() {
 
   $("#send_button").click(sendTAFeedback);
+
+  // check box if always_show == true
+  chrome.storage.local.get(null, function(items) {
+    if (!items.user_id) {
+      user_id = Math.random().toString(36) + new Date().getTime();
+      always_show = (Math.random() < 0.5);
+      console.log("always show: " + always_show);
+      chrome.storage.local.set({user_id: user_id, always_show: always_show});
+    } else if (items.always_show == undefined) {
+      user_id = items.user_id;
+      always_show = (Math.random() < 0.5);
+      console.log("always show: " + always_show);
+      chrome.storage.local.set({always_show: always_show});
+    } else {
+      user_id = items.user_id;
+      always_show = items.always_show;
+    }
+    console.log("always show: " + always_show);
+    if (always_show) {
+      $("#always_show_checkbox").prop( "checked", true );
+    }
+  });
+
+  $("#always_show_checkbox").change(function() {
+    if(this.checked) {
+      always_show = true;
+    } else {
+      always_show = false;
+    }
+    chrome.storage.local.set({always_show: always_show});
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, "always show changed", function(response) {
+        console.log("sent always show message: " + response);
+      });
+    });
+    console.log("always show: " + always_show);
+  });
 
 });
