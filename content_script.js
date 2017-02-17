@@ -56,14 +56,15 @@ function storeAndPrintAllComments(comments) {
 // print the comments for the given rubric item
 // id_num is the rubric item's HTML id (a long number)
 // index is its index in the list of rubric items
-function storeAndPrintComments(comments, id_num, index) {
+// searching = true if this was called by the search function
+function storeAndPrintComments(comments, id_num, index, searching) {
 
 	// specifies which rubric item suggestion box we are adding to
-	var selector_addition = "#suggestion_box_" + id_num + " ";
+	var selector_addition = "#suggestion_box_" + id_num;
 	
-	$(selector_addition + ".comments_good").html("");
-	$(selector_addition + ".comments_bad").html("");
-	$(selector_addition + ".comments_should").html("");
+	$(selector_addition + " .comments_good").html("");
+	$(selector_addition + " .comments_bad").html("");
+	$(selector_addition + " .comments_should").html("");
 
 	// sort comments ascending by length
     comments = comments.sort(function(info1, info2) {
@@ -128,18 +129,20 @@ function storeAndPrintComments(comments, id_num, index) {
         "</tr>";
 
       if (category == "1") {
-        $(selector_addition + ".comments_good").append(string);
+        $(selector_addition + " .comments_good").append(string);
       } else if (category == "2") {
-        $(selector_addition + ".comments_bad").append(string);
+        $(selector_addition + " .comments_bad").append(string);
       } else if (category == "3") {
-        $(selector_addition + ".comments_should").append(string);
+        $(selector_addition + " .comments_should").append(string);
       } else {
-        $(selector_addition + ".comments_should").append("error with comment category");
+        $(selector_addition + " .comments_should").append("error with comment category");
       }
     }
 
     // save these for the button callback's use
-    full_sorted_comments[index] = comments;
+    if (!searching) {
+    	full_sorted_comments[index] = comments;
+    }
     
     // make insert buttons clickable
     $(".btn").unbind("click");
@@ -205,7 +208,7 @@ function searchComments(query, search_id) {
 	}
 	console.log("calling store and print from search");
 	console.log(result_comments);
-	storeAndPrintComments(result_comments, id_num, $("#" + id_num).index());
+	storeAndPrintComments(result_comments, id_num, $("#" + id_num).index(), true);
 }
 
 function toggleSuggestionBox(id_num) {

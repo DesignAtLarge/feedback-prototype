@@ -19,6 +19,7 @@
 
 .blank {
   cursor: pointer;
+  display: inline;
 }
 
 .suggestion_header {
