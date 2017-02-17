@@ -31,7 +31,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!A2:H110",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!A2:I110",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.responseType = "json";
@@ -72,19 +72,19 @@ function updateSheets(action, rubric_question, rubric_item, comment_info) {
         };
 
         var row = parseInt(comment_info[0]) + 2;
-        var cur_frequency = parseInt(comment_info[7]);
-        //console.log("comment was from row " + row);
-        console.log("frequency was" + cur_frequency);
+        var cur_frequency = parseInt(comment_info[8]);
+        console.log("comment was from row " + row);
+        console.log("frequency was " + cur_frequency);
 
         xhr.open("PUT", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!H" + row + "?valueInputOption=RAW",
+          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!I" + row + "?valueInputOption=RAW",
           true);
         xhr.setRequestHeader('Authorization','Bearer ' + token);
         xhr.setRequestHeader("Content-type", "application/json");
         //xhr.responseType = "json";
 
         xhr.send('{' + 
-          '"range": "A6!H' + row + '",' + 
+          '"range": "A6!I' + row + '",' + 
           '"values": [[' + (cur_frequency + 1) + ']]' + 
         '}');
       }
