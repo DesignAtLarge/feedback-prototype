@@ -8,7 +8,7 @@ var always_show;
 var full_sorted_comments;
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
-var num_rubric_items = {1: 2, 2: 3, 3: 7, 4: 2, 5: 4};
+var num_rubric_items = {1: 9, 2: 11, 3: 3, 4: 3};
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
@@ -24,17 +24,18 @@ function filterComments(comments) {
 	var i = 0;
 	while (i < num_rubric_items[rubric_number]) {
 		result.push(comments.filter(function(comment) {
-			return comment[2] == i;
+			var rubric_items = comment[2].split(" ");
+			return rubric_items.includes(i.toString());
 		}));
 		i++;
 	}
 
 	// now if any of them turned out empty, use all the comments for that rubric item
-	for (var j=0; j < result.length; j++) {
+	/*for (var j=0; j < result.length; j++) {
 		if (result[j].length == 0) {
 			result[j] = comments;
 		}
-	}
+	}*/
 	
 	//console.log("FILTERED COMMENTS");
 	//console.log(result);
@@ -44,12 +45,15 @@ function filterComments(comments) {
 // print all comments for this rubric question
 function storeAndPrintAllComments(comments) {
 	full_sorted_comments = comments;
-	console.log("in store and print all");
+	//console.log("in store and print all");
 	$(".rubric-item").each(function(ind) {
-		console.log("rubric item " + ind);
-		storeAndPrintComments(comments[ind], this.id, ind);
-		//console.log("storing comments for rubric item " + ind);
-		//console.log(comments[ind]);
+		// don't show suggs for None rubric item
+		if (ind < num_rubric_items[rubric_number]) { 
+			//console.log("rubric item " + ind);
+			storeAndPrintComments(comments[ind], this.id, ind);
+			//console.log("storing comments for rubric item " + ind);
+			//console.log(comments[ind]);
+		}
 	});
 }
 
@@ -138,10 +142,14 @@ function storeAndPrintComments(comments, id_num, index, searching) {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
     }
-
-    // save these for the button callback's use
+    
     if (!searching) {
+    	// save these for the button callback's use
     	full_sorted_comments[index] = comments;
+    	// hide search bar if there are 5 or less comments (unnecessary)
+    	if (comments.length <= 6) {
+    		$("#search_" + id_num).hide();
+    	}
     }
     
     // make insert buttons clickable
@@ -178,6 +186,29 @@ function storeAndPrintComments(comments, id_num, index, searching) {
 
 }
 
+function updateCommentViews(view_id) {
+	setTimeout(function(){ 
+		$(".comment_view_text").each(function(ind) {
+			if (view_id == undefined || this.id != view_id) {
+				$(this).val($("#question_submission_evaluation_comments").val());
+			}
+		});
+	}, 100);
+	
+}
+
+function updateCommentBox(view_id) {
+	setTimeout(function(){ 
+		$("#question_submission_evaluation_comments").val($("#" + view_id).val());
+		setTimeout(function() {
+			updateCommentViews(view_id);
+		}, 1000);
+	}, 100);
+	// simulate blur so the new comment will save
+	var event = new KeyboardEvent('blur');
+	document.querySelector('#question_submission_evaluation_comments').dispatchEvent(event);
+}
+
 // comment has been clicked. Add it to the gradescope comment box.
 function insertComment(comment) {
 
@@ -188,7 +219,7 @@ function insertComment(comment) {
   	$("#question_submission_evaluation_comments").height($("#question_submission_evaluation_comments")[0].scrollHeight);
   	//console.log("doin it");
   
-  	// simulate keydown so the new comment will save
+  	// simulate blur so the new comment will save
   	var event = new KeyboardEvent('keydown');
   	document.querySelector('#question_submission_evaluation_comments').dispatchEvent(event);
 }
@@ -213,7 +244,7 @@ function searchComments(query, search_id) {
 
 function toggleSuggestionBox(id_num) {
 
-	$("#suggestion_box_" + id_num).toggle();
+	$("#suggestion_container_" + id_num).toggle();
 	if ($("#see_suggestions_" + id_num + " .toggle_word").html() == "See") {
 		$("#see_suggestions_" + id_num + " .toggle_word").html("Hide");
 	} else {
@@ -222,18 +253,18 @@ function toggleSuggestionBox(id_num) {
 }
 
 function hideAllSuggestions() {
-	$(".suggestion_box").each(function() {
+	$(".suggestion_container").each(function() {
 		if ($(this).is(":visible")) {
-			var cur_id_num = this.id.split("suggestion_box_")[1];
+			var cur_id_num = this.id.split("suggestion_container_")[1];
 			toggleSuggestionBox(cur_id_num);
 		}
 	});
 }
 
 function showAllSuggestions() {
-	$(".suggestion_box").each(function() {
+	$(".suggestion_container").each(function() {
 		if (!$(this).is(":visible")) {
-			var cur_id_num = this.id.split("suggestion_box_")[1];
+			var cur_id_num = this.id.split("suggestion_container_")[1];
 			toggleSuggestionBox(cur_id_num);
 		}
 	});
@@ -249,22 +280,47 @@ function injectSuggestions() {
 		display_setting = "";
 	}
 
-	$("li.rubric-item").each(function() {
+	$("li.rubric-item").each(function(ind) {
 
-		$(this).append(
-			"<div class='see_suggestions' id='see_suggestions_" + this.id + "'>" + 
-				"<span class='toggle_word'>" + toggle_word + "</span> suggestions..." + 
-			"</div>" +
-			"<div id='suggestion_box_" + this.id + "' class='rubric-comments suggestion_box'" + display_setting + ">" + 
-				"<input class='search_text' id='search_" + this.id + "' placeholder='Search...' type='text'></input>" +
-				'<div class="first_header suggestion_header">"I wish..."</div>' +
-			      	"<table class='comments_bad comments_table'></table>" + 
-			    '<div class="suggestion_header">"I suggest..."</div>' +
-			      	"<table class='comments_should comments_table'></table>" +
-			    '<div class="suggestion_header">"I like..."</div>' +
-			      	"<table class='comments_good comments_table'></table>" +
-			"</div>"
-		);
+		// don't show suggs for None rubric item
+		if (ind < num_rubric_items[rubric_number]) { 
+
+			$(this).append(
+				"<div class='see_suggestions' id='see_suggestions_" + this.id + "'>" + 
+					"<span class='toggle_word'>" + toggle_word + "</span> suggestions..." + 
+				"</div>" +
+				"<div id='suggestion_container_" + this.id + "' class='suggestion_container'" + display_setting + ">" +
+					"<div id='suggestion_box_" + this.id + "' class='rubric-comments suggestion_box'>" + 
+						"<input class='search_text' id='search_" + this.id + "' placeholder='Search...' type='text'></input>" +
+						'<div class="first_header suggestion_header">"I wish..."</div>' +
+					      	"<table class='comments_bad comments_table'></table>" + 
+					    '<div class="suggestion_header">"I suggest..."</div>' +
+					      	"<table class='comments_should comments_table'></table>" +
+					    '<div class="suggestion_header">"I like..."</div>' +
+					      	"<table class='comments_good comments_table'></table>" +
+					"</div>" + 
+					'<div class="comment_view">' +
+						'<textarea id="comment_view_' + this.id + '" class="comment_view_text"' + 
+							' placeholder="Provide comments specific to this submission">' +
+						'</textarea>' +
+					'</div>' +
+				"</div>"
+			);
+			$(this).find(".comment_view_text").val($("#question_submission_evaluation_comments").val());
+		}
+	});
+
+	// event listener to update everything when comment view text is changed
+	$(".comment_view_text").keydown(function() { updateCommentBox(this.id); });
+	$(".comment_view_text").focus(function() { 
+		var rubric_item = $(this).parents("li.rubric-item").find(".rubric-description").find(".mathInput--preview").html();
+		// tell chrome to log the event that we just clicked the comment box
+		chrome.runtime.sendMessage({action: "logFocus",
+									rubric_question: rubric_name,
+									rubric_item: rubric_item
+			}, function(response) {
+				console.log("logging focus: " + response);
+		});
 	});
 
 	// see/hide button functionality
@@ -304,12 +360,18 @@ $(function() {
 	student_id = $("#student-name-tooltip-link").html();
 	rubric_number = rubric_name.split(":")[0];
 	//console.log("rubric number: " + rubric_number);
+	var rubric_name_lower = rubric_name.toLowerCase();
 
-	// only work for assignment 6
-	if (rubric_name == "1: POV/Inspiration" || rubric_name == "2: Reading JSON Data" ||
-		rubric_name == "3: App Pages" || rubric_name == "4: Development Plan" || rubric_name == "5: Task Description &amp; URL's") {
+	// only work for assignment 7
+	if (rubric_name_lower == "1: user testing plan" || rubric_name_lower == "2: complete functionality" ||
+		rubric_name_lower == "3: development plan" || rubric_name_lower == "4: submission links") {
 
 		button_url = chrome.extension.getURL("button.png");
+
+		// event listener for whenever comment box updates, to update all the comment views too
+		$("#question_submission_evaluation_comments").keydown(function() {
+			updateCommentViews();
+		});
 
 		// wait to receive the comments from spreadsheet
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

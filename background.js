@@ -31,7 +31,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!A2:I110",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A7!A2:I110",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.responseType = "json";
@@ -77,14 +77,14 @@ function updateSheets(action, rubric_question, rubric_item, comment_info) {
         console.log("frequency was " + cur_frequency);
 
         xhr.open("PUT", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A6!I" + row + "?valueInputOption=RAW",
+          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A7!I" + row + "?valueInputOption=RAW",
           true);
         xhr.setRequestHeader('Authorization','Bearer ' + token);
         xhr.setRequestHeader("Content-type", "application/json");
         //xhr.responseType = "json";
 
         xhr.send('{' + 
-          '"range": "A6!I' + row + '",' + 
+          '"range": "A7!I' + row + '",' + 
           '"values": [[' + (cur_frequency + 1) + ']]' + 
         '}');
       }
@@ -122,27 +122,27 @@ function updateSheets(action, rubric_question, rubric_item, comment_info) {
 
         xhr2.open("POST", 
           "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
-            "/values/A6!A2:G100000:append?valueInputOption=RAW",
+            "/values/A7!A2:G100000:append?valueInputOption=RAW",
           true);
         xhr2.setRequestHeader('Authorization','Bearer ' + token);
         xhr2.setRequestHeader("Content-type", "application/json");
 
         if (action == "comment") {
           xhr2.send('{' + 
-            '"range": "A6!A2:G100000",' + 
+            '"range": "A7!A2:G100000",' + 
             '"values": [[ "' + new Date().toString() + '", "comment", "' + comment_info[0] + '", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + 
             '" ]]' + 
           '}');
         } else if (action == "change setting") {
           xhr2.send('{' + 
-            '"range": "A6!A2:G100000",' + 
+            '"range": "A7!A2:G100000",' + 
             '"values": [[ "' + new Date().toString() + '", "change setting", "", "' + user_id + '", "", "", "' + always_show + 
             '" ]]' + 
           '}');
-        } else if (action == "show suggestions" || action == "hide suggestions") {
+        } else if (action == "show suggestions" || action == "hide suggestions" || action == "focus") {
           xhr2.send('{' + 
-            '"range": "A6!A2:G100000",' + 
+            '"range": "A7!A2:G100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + 
             '" ]]' + 
@@ -178,6 +178,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     sendResponse("event logged");
   } else if (request.action == "logSuggestionHide") {
     updateSheets("hide suggestions", request.rubric_question, request.rubric_item);
+    sendResponse("event logged");
+  } else if (request.action == "logFocus") {
+    updateSheets("focus", request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   }
 });
