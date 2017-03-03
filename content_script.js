@@ -8,17 +8,33 @@ var always_show;
 var full_sorted_comments;
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
-var num_rubric_items = {1: 9, 2: 11, 3: 3, 4: 3};
+var num_rubric_items = {1: 8, 2: 9, 3: 2, 4: 5};
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
 function filterComments(comments) {
 	// first get only this rubric question number
 	comments = comments.filter(function(comment) {
-		return comment[1] == rubric_number;
+		return comment[1].includes(rubric_number);
 	});
 
 	var result = [];
+
+	// deal with comments that apply to multiple rubric questions
+	for (var i = 0; i < comments.length; i++) {
+		var comment = comments[i]
+		var rubric_numbers = comment[1].split("/");
+		if (rubric_numbers.length > 1) {
+			if (rubric_numbers[0] == rubric_number) {
+				comments[i][2] = comments[i][2].split("/")[0];
+			} else if (rubric_numbers[1] == rubric_number) {
+				comments[i][2] = comments[i][2].split("/")[1];
+			} else {
+				console.log("error, wtf did you do");
+			}
+		}
+		//console.log(comments[i]);
+	}
 
 	// add comments for each rubric item
 	var i = 0;
@@ -48,11 +64,13 @@ function storeAndPrintAllComments(comments) {
 	//console.log("in store and print all");
 	$(".rubric-item").each(function(ind) {
 		// don't show suggs for None rubric item
-		if (ind < num_rubric_items[rubric_number]) { 
+		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
 			//console.log("rubric item " + ind);
 			storeAndPrintComments(comments[ind], this.id, ind);
 			//console.log("storing comments for rubric item " + ind);
 			//console.log(comments[ind]);
+		} else if (ind < num_rubric_items[rubric_number]) {
+			$("#search_" + this.id).hide();
 		}
 	});
 }
@@ -363,7 +381,7 @@ $(function() {
 	var rubric_name_lower = rubric_name.toLowerCase();
 
 	// only work for assignment 7
-	if (rubric_name_lower == "1: user testing plan" || rubric_name_lower == "2: complete functionality" ||
+	if (rubric_name_lower == "1: user testing" || rubric_name_lower == "2: prepare for a/b testing" ||
 		rubric_name_lower == "3: development plan" || rubric_name_lower == "4: submission links") {
 
 		button_url = chrome.extension.getURL("button.png");
