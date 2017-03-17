@@ -19,7 +19,8 @@
 
 .blank {
   cursor: pointer;
-  display: inline;
+  display: inline-block;
+  width: 75px !important;
 }
 
 .suggestion_header {

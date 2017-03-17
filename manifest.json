@@ -3,7 +3,7 @@
 
   "name": "Feedback Prototype",
   "description": "Suggests previous gradescope comments for feedback",
-  "version": "6.0",
+  "version": "7.0",
 
   "browser_action": {
     "default_popup": "popup.html"

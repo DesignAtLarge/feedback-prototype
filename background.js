@@ -31,7 +31,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A8!A2:I110",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A9!A2:K110",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.responseType = "json";
@@ -50,7 +50,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, rubric_question, rubric_item, comment_info) {
+function updateSheets(action, rubric_question, rubric_item, comment_info, comment) {
   //console.log("updating sheets");
   // a comment was just inserted, update the google sheets to keep count & log this
   chrome.identity.getAuthToken({interactive: true}, function(token) {
@@ -77,14 +77,14 @@ function updateSheets(action, rubric_question, rubric_item, comment_info) {
         console.log("frequency was " + cur_frequency);
 
         xhr.open("PUT", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A8!I" + row + "?valueInputOption=RAW",
+          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A9!I" + row + "?valueInputOption=RAW",
           true);
         xhr.setRequestHeader('Authorization','Bearer ' + token);
         xhr.setRequestHeader("Content-type", "application/json");
         //xhr.responseType = "json";
 
         xhr.send('{' + 
-          '"range": "A8!I' + row + '",' + 
+          '"range": "A9!I' + row + '",' + 
           '"values": [[' + (cur_frequency + 1) + ']]' + 
         '}');
       }
@@ -122,30 +122,30 @@ function updateSheets(action, rubric_question, rubric_item, comment_info) {
 
         xhr2.open("POST", 
           "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
-            "/values/A8!A2:G100000:append?valueInputOption=RAW",
+            "/values/A9!A2:H100000:append?valueInputOption=RAW",
           true);
         xhr2.setRequestHeader('Authorization','Bearer ' + token);
         xhr2.setRequestHeader("Content-type", "application/json");
 
         if (action == "comment") {
           xhr2.send('{' + 
-            '"range": "A8!A2:G100000",' + 
+            '"range": "A9!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "comment", "' + comment_info[0] + '", "' + user_id + '", "' + 
-                  rubric_question + '", "' + rubric_item + '", "' + always_show + 
+                  rubric_question + '", "' + rubric_item + '", "' + always_show + '", "' + comment + 
             '" ]]' + 
           '}');
         } else if (action == "change setting") {
           xhr2.send('{' + 
-            '"range": "A8!A2:G100000",' + 
+            '"range": "A9!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "change setting", "", "' + user_id + '", "", "", "' + always_show + 
-            '" ]]' + 
+            '", "" ]]' + 
           '}');
         } else if (action == "show suggestions" || action == "hide suggestions" || action == "focus") {
           xhr2.send('{' + 
-            '"range": "A8!A2:G100000",' + 
+            '"range": "A9!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + 
-            '" ]]' + 
+            '", "" ]]' + 
           '}');
         }
 
@@ -168,7 +168,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     loadSpreadsheet();
     sendResponse("done");
   } else if (request.action == "logEvent") {
-    updateSheets("comment", request.rubric_question, request.rubric_item, request.comment_info);
+    updateSheets("comment", request.rubric_question, request.rubric_item, request.comment_info, request.comment);
     sendResponse("event logged");
   } else if (request.action == "logShowSetting") {
     updateSheets("change setting");

@@ -8,7 +8,7 @@ var always_show;
 var full_sorted_comments;
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
-var num_rubric_items = {1: 8, 2: 9, 3: 2, 4: 5};
+var num_rubric_items = {1: 5, 2: 7, 3: 7, 4: 3, 5: 5, 6: 1};
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
@@ -142,12 +142,17 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       var shade = num_shades * (max_freq - parseInt(comments[i][8]));
 
       var comment = comments[i][5].replace(/_blank_/g, 
-      		"<span class='blank' contenteditable=true>______</span>");
+      		"<input type='text' class='blank' />");
+
+      var blank_values = "";
+      if (comments[i][10] != undefined) {
+	    blank_values = comments[i][10].split(", ");
+	  }
 
       var string = "<tr"  + 
         " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
         	"<td><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
-        	"<td class='comment_" + i + "'>" + comment + "</td>" + 
+        	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 
       if (category == "1") {
@@ -159,7 +164,24 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       } else {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
+
+      // now make the "blank" placeholders show when you focus on the blank
+      if (comments[i][10] != undefined) {
+
+	    $(selector_addition).find(".comment_" + i).each(function() {
+
+	    	var blanks = $(this).attr("data-blanks").split(",");
+
+	    	$(this).find(".blank").focus(function() {
+		    	$(this).attr("placeholder", blanks[$(this).index()]);
+		    }).blur(function() {
+		    	$(this).attr("placeholder", "");
+		    })
+		});
+	  }
     }
+
+    
     
     if (!searching) {
     	// save these for the button callback's use
@@ -173,6 +195,7 @@ function storeAndPrintComments(comments, id_num, index, searching) {
     // make insert buttons clickable
     $(".btn").unbind("click");
     $(".btn").click(function(obj) { 
+      // button clicked! insert suggestion
       var btn_id_num = $(this).attr("class").split(" ")[1];
 
       // index of this rubric item = index of these comments in full_sorted_comments
@@ -182,7 +205,14 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
       //console.log(comment);
 
-      comment = comment.replace(/<span class="blank" contenteditable="true">/g, "").replace(/<\/span>/g, "");
+      // remove the blanky stuff
+      var blank_loc = comment.indexOf("<input");
+      var blank_i = 0;
+      while (blank_loc != -1) {
+      	comment = comment.replace(/<input.*?>/, $(this).parents("tr").find(".blank").get(blank_i).value);
+      	blank_i++;
+      	blank_loc = comment.indexOf("<input");
+      }
 
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
@@ -195,7 +225,8 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       chrome.runtime.sendMessage({action: "logEvent", 
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
-      							rubric_item: rubric_item
+      							rubric_item: rubric_item,
+      							comment: comment
       						}, function(response) {
       	console.log(response);
       });      
@@ -381,8 +412,10 @@ $(function() {
 	var rubric_name_lower = rubric_name.toLowerCase();
 
 	// only work for assignment 7
-	if (rubric_name_lower == "1: user testing" || rubric_name_lower == "2: prepare for a/b testing" ||
-		rubric_name_lower == "3: development plan" || rubric_name_lower == "4: submission links") {
+	if (rubric_name_lower == "1: compile and analyze" || rubric_name_lower == "2: interpret and implement" ||
+		rubric_name_lower == "3: branding and aesthetics" || 
+		rubric_name_lower == "4: development plan" || rubric_name_lower == "5: submit" ||
+		rubric_name_lower == "6: above and beyond") {
 
 		button_url = chrome.extension.getURL("button.png");
 
