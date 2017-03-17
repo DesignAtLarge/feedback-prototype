@@ -111,6 +111,8 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
         console.log("user id: " + user_id);
         console.log("always show: " + always_show);
 
+        rubric_item = rubric_item.replace(/"/g, '\\"').replace(/'/g, "\\'");
+
         var xhr2 = new XMLHttpRequest();
         xhr2.onreadystatechange = function () {
           if(xhr2.readyState === XMLHttpRequest.DONE && xhr2.status == 200) {
@@ -219,7 +221,7 @@ function saveNewComment() {
           // frequency (i) = 1
           // frequency orig (j) = 1
           values += '[ "", "' + rubric_number + '", "", "", "' + original_id + '", "' + 
-              comment + '", "' + comment_length + '", "0", "1", "1", ""' + 
+              comment + '", "' + comment_length + '", "0", "1", "1", "", "' + user_id + '"' + 
             ' ],'
 
         }
@@ -231,7 +233,7 @@ function saveNewComment() {
         if (inserted_comments[comment_id] != "") {
           values += '[ "", "' + rubric_number + '", "", "", "' + comment_id + '", "' + 
               inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].split(" ").length + 
-              '", "0", "1", "1", ""' + 
+              '", "0", "1", "1", "", "' + user_id + '"' + 
             ' ],'
         }
       }
@@ -266,12 +268,12 @@ function appendCommentsToSheet(values) {
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/W16-A10!A2:K10000:append?valueInputOption=RAW",
+          "/values/W16-A10!A2:L10000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "W16-A10!A2:K10000",' + 
+        '"range": "W16-A10!A2:L10000",' + 
         values + 
       '}');
     }

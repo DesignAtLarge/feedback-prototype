@@ -6,6 +6,7 @@ var button_url;
 var full_comments;
 var always_show;
 var full_sorted_comments;
+var original_text; // text that was already in the comment box
 var comment_text; // the text they have entered so far in the comment box
 var comments_inserted = {}; // list with text of comments they have inserted on this page. format: { id: text }
 // key = rubric question number, value = how many rubric items that question has
@@ -259,6 +260,16 @@ function updateCommentViews(view_id) {
 		});
 		// save current text
 		comment_text = $('#question_submission_evaluation_comments').val();
+
+		if (original_text != "") {
+			var split = comment_text.split(original_text);
+			if (split.length == 2) {
+				comment_text = split[1];
+			}
+		}
+		console.log("got updated comments: ")
+		console.log(comment_text);
+
 		chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
 			rubric_number: rubric_number, saved: false});
 	}, 100);
@@ -442,6 +453,11 @@ $(function() {
 		chrome.runtime.sendMessage({action: "onGradingPage"});
 
 		button_url = chrome.extension.getURL("button.png");
+
+		// get text currently in comment box
+		original_text = $("#question_submission_evaluation_comments").val();
+		console.log("original text:");
+		console.log(original_text);
 
 		// event listener for whenever comment box updates, to update all the comment views too
 		$("#question_submission_evaluation_comments").keydown(function() {
