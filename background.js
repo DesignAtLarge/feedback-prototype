@@ -2,6 +2,7 @@ var comment_sheet_id = "1-Xo0TcHNoSnbxtkGgiRcbnxcMip1R0PQFsrIOsiYevU";
 var event_sheet_id = "1pSgzEcft13sB3Lee_zNMkYD_WcDIUqKnjyP12XtLjzc";
 var user_id;
 var always_show;
+var on_grading_page;
 
 function loadSpreadsheet() {
   if (chrome.identity === undefined) {
@@ -31,7 +32,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A9!A2:K110",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!A2:K10000",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.responseType = "json";
@@ -77,14 +78,14 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
         console.log("frequency was " + cur_frequency);
 
         xhr.open("PUT", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/A9!I" + row + "?valueInputOption=RAW",
+          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!I" + row + "?valueInputOption=RAW",
           true);
         xhr.setRequestHeader('Authorization','Bearer ' + token);
         xhr.setRequestHeader("Content-type", "application/json");
         //xhr.responseType = "json";
 
         xhr.send('{' + 
-          '"range": "A9!I' + row + '",' + 
+          '"range": "W16-A10!I' + row + '",' + 
           '"values": [[' + (cur_frequency + 1) + ']]' + 
         '}');
       }
@@ -122,27 +123,27 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
 
         xhr2.open("POST", 
           "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
-            "/values/A9!A2:H100000:append?valueInputOption=RAW",
+            "/values/A10!A2:H100000:append?valueInputOption=RAW",
           true);
         xhr2.setRequestHeader('Authorization','Bearer ' + token);
         xhr2.setRequestHeader("Content-type", "application/json");
 
         if (action == "comment") {
           xhr2.send('{' + 
-            '"range": "A9!A2:H100000",' + 
+            '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "comment", "' + comment_info[0] + '", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + '", "' + comment + 
             '" ]]' + 
           '}');
         } else if (action == "change setting") {
           xhr2.send('{' + 
-            '"range": "A9!A2:H100000",' + 
+            '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "change setting", "", "' + user_id + '", "", "", "' + always_show + 
             '", "" ]]' + 
           '}');
         } else if (action == "show suggestions" || action == "hide suggestions" || action == "focus") {
           xhr2.send('{' + 
-            '"range": "A9!A2:H100000",' + 
+            '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + 
             '", "" ]]' + 
@@ -163,6 +164,151 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
   });
 }
 
+function saveNewComment() {
+  chrome.storage.local.get(null, function(items) {
+    if (items.saved != undefined && !items.saved) {
+      var values = '"values": [';
+      // these have not been saved yet
+      // save them
+
+      // split comment text by newlines
+      var comments = items.comment_text.split("\n");
+      var rubric_number = items.rubric_number;
+      var inserted_comments = items.comments_inserted;
+      var original_id = "";
+
+      // for each comment, append it to spreadsheet:
+      for (var i = 0; i < comments.length; i++) {
+        var already_there = false;
+
+        var comment = comments[i];
+        // ignore empty lines
+        if (comment != "") {
+          // delete -'s at the start of lines
+          if (comment[0] == "-") {
+            if (comment[1] == " ") {
+              comment = comment.substr(2);
+            } else {
+              comment = comment.substr(1);
+            }
+          }
+          console.log("comment:")
+          console.log(comment);
+
+          // check if comment == any of the inserted comments
+          for (var comment_id in inserted_comments) {
+            console.log("comparing:")
+            console.log(comment);
+            console.log(inserted_comments[comment_id]);
+            if (comment == inserted_comments[comment_id]) {
+              console.log("equal!");
+              original_id = comment_id;
+              inserted_comments[comment_id] = "";
+              already_there = true;
+            }
+          }
+          if (already_there) continue;
+
+          var comment_length = comment.split(" ").length;
+          // rubric question number (b) = items.rubric_number
+          // if comment = one of the inserted comments, original id (e) = that inserted comment's id
+          //    then remove that comment from inserted comments
+          // comments (f) = comment
+          // length (g) = comment.split(" ").length
+          // category (h) = 0
+          // frequency (i) = 1
+          // frequency orig (j) = 1
+          values += '[ "", "' + rubric_number + '", "", "", "' + original_id + '", "' + 
+              comment + '", "' + comment_length + '", "0", "1", "1", ""' + 
+            ' ],'
+
+        }
+      }
+
+      // if any comments left in inserted comments, just append them and figure it out manually
+      //    be sure to include original comment id
+      for (var comment_id in inserted_comments) {
+        if (inserted_comments[comment_id] != "") {
+          values += '[ "", "' + rubric_number + '", "", "", "' + comment_id + '", "' + 
+              inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].split(" ").length + 
+              '", "0", "1", "1", ""' + 
+            ' ],'
+        }
+      }
+      values = values.slice(0, values.length-1) + ']';
+      if (values != '"values": ]') {
+        appendCommentsToSheet(values);
+      }
+      // set saved to true so they don't get saved again
+      chrome.storage.local.set({saved: true});
+
+    }
+  });
+}
+
+function appendCommentsToSheet(values) {
+  console.log(values);
+  
+  // save to spreadsheet
+  chrome.identity.getAuthToken({interactive: true}, function(token) {
+    if (token) {
+      console.log("got the token");
+      // use that access token to set an http header when calling the Drive API.
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+            // request done, we sent the data 
+            console.log("Added new comments")
+        } else if (xhr.readyState === XMLHttpRequest.DONE) {
+          console.log(xhr.responseText);
+        }
+      };
+
+      xhr.open("POST", 
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
+          "/values/W16-A10!A2:K10000:append?valueInputOption=RAW",
+        true);
+      xhr.setRequestHeader('Authorization','Bearer ' + token);
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.send('{' + 
+        '"range": "W16-A10!A2:K10000",' + 
+        values + 
+      '}');
+    }
+  });
+}
+
+// keyboard shortcut to modify always show setting
+chrome.commands.onCommand.addListener(function(command) {
+  if (command == "toggle-suggestion-view") {
+
+    // get current always show setting
+    chrome.storage.local.get(null, function(items) {
+      always_show = items.always_show;
+      
+      // now change it
+      always_show = !always_show;
+      chrome.storage.local.set({always_show: always_show});
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, "always show changed", function(response) {
+          console.log("sent always show message: " + response);
+        });
+      });
+      console.log("always show: " + always_show);
+    });
+  }
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (changeInfo.status == "complete") {
+    if (on_grading_page) {
+      // get the text they entered for this submission and send it to spreadsheet
+      saveNewComment();
+      
+    }
+  }
+});
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action == "loadSpreadsheet") {
     loadSpreadsheet();
@@ -182,5 +328,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.action == "logFocus") {
     updateSheets("focus", request.rubric_question, request.rubric_item);
     sendResponse("event logged");
+  } else if (request.action == "onGradingPage") {
+    on_grading_page = true;
+  } else if (request.action == "onOtherPage") {
+    on_grading_page = false;
   }
 });

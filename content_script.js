@@ -6,22 +6,24 @@ var button_url;
 var full_comments;
 var always_show;
 var full_sorted_comments;
+var comment_text; // the text they have entered so far in the comment box
+var comments_inserted = {}; // list with text of comments they have inserted on this page. format: { id: text }
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
-var num_rubric_items = {1: 5, 2: 7, 3: 7, 4: 3, 5: 5, 6: 1};
+var num_rubric_items = {1: 4, 2: 3, 3: 4, 4: 3, 5: 4, 6: 2, 7: 6};
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
 function filterComments(comments) {
 	// first get only this rubric question number
 	comments = comments.filter(function(comment) {
-		return comment[1].includes(rubric_number);
+		return (comment[7] != "0" && (comment[1].includes(rubric_number) || comment[1].includes("0")));
 	});
 
 	var result = [];
 
 	// deal with comments that apply to multiple rubric questions
-	for (var i = 0; i < comments.length; i++) {
+	/*for (var i = 0; i < comments.length; i++) {
 		var comment = comments[i]
 		var rubric_numbers = comment[1].split("/");
 		if (rubric_numbers.length > 1) {
@@ -34,14 +36,15 @@ function filterComments(comments) {
 			}
 		}
 		//console.log(comments[i]);
-	}
+	}*/
 
 	// add comments for each rubric item
 	var i = 0;
 	while (i < num_rubric_items[rubric_number]) {
 		result.push(comments.filter(function(comment) {
-			var rubric_items = comment[2].split(" ");
-			return rubric_items.includes(i.toString());
+			/*var rubric_items = comment[2].split(" ");
+			return rubric_items.includes(i.toString());*/
+			return true;
 		}));
 		i++;
 	}
@@ -53,8 +56,8 @@ function filterComments(comments) {
 		}
 	}*/
 	
-	//console.log("FILTERED COMMENTS");
-	//console.log(result);
+	console.log("FILTERED COMMENTS");
+	console.log(result);
 	return result;
 }
 
@@ -116,6 +119,19 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       }
     });
 
+    //A10: put non-0 comments first (ones specific to this rubric question)
+    var comments_0 = [];
+    var comments_non0 = [];
+    for (var i = 0; i < comments.length; i++) {
+    	if (parseInt(comments[i][1]) == 0) {
+    		comments_0.push(comments[i]);
+    	} else {
+    		comments_non0.push(comments[i]);
+    	}
+    }
+
+    comments = comments_non0.concat(comments_0);
+
     //console.log(comments);
     // get max and min frequency
     var max_freq = parseInt(comments[0][8]);
@@ -165,18 +181,16 @@ function storeAndPrintComments(comments, id_num, index, searching) {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
 
-      // now make the "blank" placeholders show when you focus on the blank
+      // now make the "blank" placeholders show 
       if (comments[i][10] != undefined) {
 
 	    $(selector_addition).find(".comment_" + i).each(function() {
 
 	    	var blanks = $(this).attr("data-blanks").split(",");
 
-	    	$(this).find(".blank").focus(function() {
+	    	$(this).find(".blank").each(function() {
 		    	$(this).attr("placeholder", blanks[$(this).index()]);
-		    }).blur(function() {
-		    	$(this).attr("placeholder", "");
-		    })
+		    });
 		});
 	  }
     }
@@ -221,7 +235,8 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       console.log("inserting comment: " + comment);
       console.log(full_sorted_comments[this_index]);
       console.log(full_sorted_comments[this_index][btn_id_num]);
-      insertComment(comment);
+      var comment_id = full_sorted_comments[this_index][btn_id_num][0];
+      insertComment(comment, comment_id);
       chrome.runtime.sendMessage({action: "logEvent", 
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
@@ -242,6 +257,10 @@ function updateCommentViews(view_id) {
 				$(this).val($("#question_submission_evaluation_comments").val());
 			}
 		});
+		// save current text
+		comment_text = $('#question_submission_evaluation_comments').val();
+		chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
+			rubric_number: rubric_number, saved: false});
 	}, 100);
 	
 }
@@ -259,9 +278,11 @@ function updateCommentBox(view_id) {
 }
 
 // comment has been clicked. Add it to the gradescope comment box.
-function insertComment(comment) {
+function insertComment(comment, comment_id) {
 
 	comment = comment.replace(/\\"/g, '"').replace(/\\'/g, "'");
+
+	comments_inserted[comment_id] = comment;
 
   	$("#question_submission_evaluation_comments").val(
   		$("#question_submission_evaluation_comments").val() + "\n" + comment + "\n");
@@ -412,10 +433,13 @@ $(function() {
 	var rubric_name_lower = rubric_name.toLowerCase();
 
 	// only work for assignment 7
-	if (rubric_name_lower == "1: compile and analyze" || rubric_name_lower == "2: interpret and implement" ||
-		rubric_name_lower == "3: branding and aesthetics" || 
-		rubric_name_lower == "4: development plan" || rubric_name_lower == "5: submit" ||
-		rubric_name_lower == "6: above and beyond") {
+	if (rubric_name_lower == "1: pitch" || rubric_name_lower == "2: slide" ||
+		rubric_name_lower == "3: poster" || rubric_name_lower == "4: walkthrough" || 
+		rubric_name_lower == "5: post mortem" || rubric_name_lower == "6: development plan" ||
+		rubric_name_lower == "7: submission links") {
+
+		// tell chrome we are on a grading page
+		chrome.runtime.sendMessage({action: "onGradingPage"});
 
 		button_url = chrome.extension.getURL("button.png");
 
@@ -475,6 +499,9 @@ $(function() {
 			injectSuggestions();
 		});
 
+	} else {
+		// tell chrome we are NOT on a grading page
+		chrome.runtime.sendMessage({action: "onOtherPage"});
 	}
 });
 

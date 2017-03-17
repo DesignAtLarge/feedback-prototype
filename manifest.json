@@ -3,10 +3,20 @@
 
   "name": "Feedback Prototype",
   "description": "Suggests previous gradescope comments for feedback",
-  "version": "7.0",
+  "version": "8.0",
 
   "browser_action": {
     "default_popup": "popup.html"
+  },
+
+  "commands": {
+    "toggle-suggestion-view": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "Command+K"
+      },
+      "description": "Toggle suggestion view"
+    }
   },
 
   "permissions": [
