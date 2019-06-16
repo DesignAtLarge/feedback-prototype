@@ -111,7 +111,9 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
         console.log("user id: " + user_id);
         console.log("always show: " + always_show);
 
-        rubric_item = rubric_item.replace(/"/g, '\\"').replace(/'/g, "\\'");
+        if (rubric_item != undefined) {
+          rubric_item = rubric_item.replace(/"/g, '\\"').replace(/'/g, "\\'");
+        }
 
         var xhr2 = new XMLHttpRequest();
         xhr2.onreadystatechange = function () {
@@ -150,6 +152,13 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
                   rubric_question + '", "' + rubric_item + '", "' + always_show + 
             '", "" ]]' + 
           '}');
+        } else if (action == "gradescope focus") {
+          xhr2.send('{' + 
+            '"range": "A10!A2:H100000",' + 
+            '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
+                  rubric_question + '", "", "' + always_show + 
+            '", "" ]]' + 
+          '}');
         }
 
       });
@@ -169,15 +178,37 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
 function saveNewComment() {
   chrome.storage.local.get(null, function(items) {
     if (items.saved != undefined && !items.saved) {
+
+      if (!items.user_id) {
+        user_id = Math.random().toString(36) + new Date().getTime();
+        always_show = (Math.random() < 0.5);
+        console.log("always show setting: " + always_show);
+        chrome.storage.local.set({user_id: user_id, always_show: always_show});
+      } else if (items.always_show == undefined) {
+        user_id = items.user_id;
+        always_show = (Math.random() < 0.5);
+        console.log("always show setting: " + always_show);
+        chrome.storage.local.set({always_show: always_show});
+      } else {
+        user_id = items.user_id;
+        always_show = items.always_show;
+      }
+      console.log("user id: " + user_id);
+      console.log("always show: " + always_show);
+
+
       var values = '"values": [';
       // these have not been saved yet
       // save them
 
       // split comment text by newlines
       var comments = items.comment_text.split("\n");
-      var rubric_number = items.rubric_number;
+      console.log("comments:");
+      console.log(comments);
+      var rubric_number = items.comments_rubric_number;
       var inserted_comments = items.comments_inserted;
-      var original_id = "";
+      console.log("inserted commentS:");
+      console.log(inserted_comments);
 
       // for each comment, append it to spreadsheet:
       for (var i = 0; i < comments.length; i++) {
@@ -204,7 +235,6 @@ function saveNewComment() {
             console.log(inserted_comments[comment_id]);
             if (comment == inserted_comments[comment_id]) {
               console.log("equal!");
-              original_id = comment_id;
               inserted_comments[comment_id] = "";
               already_there = true;
             }
@@ -220,7 +250,7 @@ function saveNewComment() {
           // category (h) = 0
           // frequency (i) = 1
           // frequency orig (j) = 1
-          values += '[ "", "' + rubric_number + '", "", "", "' + original_id + '", "' + 
+          values += '[ "", "' + rubric_number + '", "", "", "", "' + 
               comment + '", "' + comment_length + '", "0", "1", "1", "", "' + user_id + '"' + 
             ' ],'
 
@@ -329,6 +359,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     sendResponse("event logged");
   } else if (request.action == "logFocus") {
     updateSheets("focus", request.rubric_question, request.rubric_item);
+    sendResponse("event logged");
+  } else if (request.action == "logGradescopeFocus") {
+    updateSheets("gradescope focus", request.rubric_question);
     sendResponse("event logged");
   } else if (request.action == "onGradingPage") {
     on_grading_page = true;

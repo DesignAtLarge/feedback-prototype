@@ -3,7 +3,7 @@
 
   "name": "Feedback Prototype",
   "description": "Suggests previous gradescope comments for feedback",
-  "version": "8.0",
+  "version": "8.3",
 
   "browser_action": {
     "default_popup": "popup.html"
@@ -27,7 +27,8 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://gradescope.com/*/questions/*/submissions/*/grade"],
+      "matches": ["https://gradescope.com/*/questions/*/submissions/*/grade", 
+        "https://www.gradescope.com/courses/*/questions/*/submissions/*/grade"],
       "js": ["jquery-2.2.2.min.js", "content_script.js"],
       "css": ["suggestions.css"]
     }

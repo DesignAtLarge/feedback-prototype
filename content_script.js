@@ -265,13 +265,15 @@ function updateCommentViews(view_id) {
 			var split = comment_text.split(original_text);
 			if (split.length == 2) {
 				comment_text = split[1];
+			} else {
+				comment_text = split[0];
 			}
 		}
 		console.log("got updated comments: ")
 		console.log(comment_text);
 
 		chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
-			rubric_number: rubric_number, saved: false});
+			comments_rubric_number: rubric_number, saved: false});
 	}, 100);
 	
 }
@@ -361,7 +363,7 @@ function injectSuggestions() {
 		display_setting = "";
 	}
 
-	$("li.rubric-item").each(function(ind) {
+	$("li.rubricEntryDragContainer").each(function(ind) {
 
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number]) { 
@@ -436,18 +438,16 @@ function injectSuggestions() {
 
 $(function() {
 
-	rubric_name = $("#rubric-show-questions .rubric-question-title").html();
+	rubric_name = $(".submissionGraderSidebar--title > span > span").html();
 
-	student_id = $("#student-name-tooltip-link").html();
+	//TODO: get student id
+	student_id = "temp";
 	rubric_number = rubric_name.split(":")[0];
 	//console.log("rubric number: " + rubric_number);
 	var rubric_name_lower = rubric_name.toLowerCase();
 
-	// only work for assignment 7
-	if (rubric_name_lower == "1: pitch" || rubric_name_lower == "2: slide" ||
-		rubric_name_lower == "3: poster" || rubric_name_lower == "4: walkthrough" || 
-		rubric_name_lower == "5: post mortem" || rubric_name_lower == "6: development plan" ||
-		rubric_name_lower == "7: submission links") {
+	// change true so that it only works on grading pages
+	if (true) {
 
 		// tell chrome we are on a grading page
 		chrome.runtime.sendMessage({action: "onGradingPage"});
@@ -462,6 +462,15 @@ $(function() {
 		// event listener for whenever comment box updates, to update all the comment views too
 		$("#question_submission_evaluation_comments").keydown(function() {
 			updateCommentViews();
+		});
+
+		$("#question_submission_evaluation_comments").focus(function() { 
+			// tell chrome to log the event that we just clicked the comment box
+			chrome.runtime.sendMessage({action: "logGradescopeFocus",
+										rubric_question: rubric_name,
+				}, function(response) {
+					console.log("logging gradescope focus: " + response);
+			});
 		});
 
 		// wait to receive the comments from spreadsheet
