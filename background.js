@@ -5,6 +5,7 @@ var always_show;
 var on_grading_page;
 
 function loadSpreadsheet() {
+  console.log("loadding spreadsheet now.....")
   if (chrome.identity === undefined) {
     console.log("Please sign-in to Chrome from its top-right menu.");
     return;
@@ -52,7 +53,7 @@ function loadSpreadsheet() {
 }
 
 function updateSheets(action, rubric_question, rubric_item, comment_info, comment) {
-  //console.log("updating sheets");
+  console.log("updating sheets now...");
   // a comment was just inserted, update the google sheets to keep count & log this
   chrome.identity.getAuthToken({interactive: true}, function(token) {
     if (token) {
@@ -343,6 +344,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action == "loadSpreadsheet") {
+    
     loadSpreadsheet();
     sendResponse("done");
   } else if (request.action == "logEvent") {
@@ -358,6 +360,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     updateSheets("hide suggestions", request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   } else if (request.action == "logFocus") {
+  
     updateSheets("focus", request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   } else if (request.action == "logGradescopeFocus") {

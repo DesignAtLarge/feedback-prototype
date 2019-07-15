@@ -1,3 +1,13 @@
+//note before start: refer to background.js for why there
+//are comment[0,1,2,blabla]
+//comment[1]==rubric_number
+//comment[4]==comment_id
+//comment[5]==comment text itself
+//comment[6]==length of comment text(string)
+//comment[8]==frequency
+//comment[11]==user_id
+
+
 var student_id;
 var rubric_name;
 var rubric_number;
@@ -17,6 +27,7 @@ var num_rubric_items = {1: 4, 2: 3, 3: 4, 4: 3, 5: 4, 6: 2, 7: 6};
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
 function filterComments(comments) {
 	// first get only this rubric question number
+	
 	comments = comments.filter(function(comment) {
 		return (comment[7] != "0" && (comment[1].includes(rubric_number) || comment[1].includes("0")));
 	});
@@ -65,7 +76,7 @@ function filterComments(comments) {
 // print all comments for this rubric question
 function storeAndPrintAllComments(comments) {
 	full_sorted_comments = comments;
-	//console.log("in store and print all");
+	console.log("in store and print all");
 	$(".rubric-item").each(function(ind) {
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
@@ -84,7 +95,7 @@ function storeAndPrintAllComments(comments) {
 // index is its index in the list of rubric items
 // searching = true if this was called by the search function
 function storeAndPrintComments(comments, id_num, index, searching) {
-
+	console.log("id num in store and print "+id_num);
 	// specifies which rubric item suggestion box we are adding to
 	var selector_addition = "#suggestion_box_" + id_num;
 	
@@ -213,7 +224,8 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       // button clicked! insert suggestion
       var btn_id_num = $(this).attr("class").split(" ")[1];
 
-      // index of this rubric item = index of these comments in full_sorted_comments
+			// index of this rubric item = index of these comments in full_sorted_comments
+			//* find the gradescope correspondence here***
       var this_index = $(this).parents("li.rubric-item").index();
       //console.log(this_index);
 
@@ -231,7 +243,7 @@ function storeAndPrintComments(comments, id_num, index, searching) {
 
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
-      var rubric_item = $(this).parents("li.rubric-item").find(".rubric-description").find(".mathInput--preview").html();
+      var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 
       console.log("inserting comment: " + comment);
       console.log(full_sorted_comments[this_index]);
@@ -252,14 +264,15 @@ function storeAndPrintComments(comments, id_num, index, searching) {
 }
 
 function updateCommentViews(view_id) {
+	console.log('view_id is '+view_id);
 	setTimeout(function(){ 
 		$(".comment_view_text").each(function(ind) {
 			if (view_id == undefined || this.id != view_id) {
-				$(this).val($("#question_submission_evaluation_comments").val());
+				$(this).val($(".form--textArea").val());
 			}
 		});
 		// save current text
-		comment_text = $('#question_submission_evaluation_comments').val();
+		comment_text = $('.form--textArea').val();
 
 		if (original_text != "") {
 			var split = comment_text.split(original_text);
@@ -279,15 +292,16 @@ function updateCommentViews(view_id) {
 }
 
 function updateCommentBox(view_id) {
+	console.log("In update, this.id is "+view_id);
 	setTimeout(function(){ 
-		$("#question_submission_evaluation_comments").val($("#" + view_id).val());
+		$(".form--textArea").val($("#" + view_id).val());
 		setTimeout(function() {
 			updateCommentViews(view_id);
 		}, 1000);
 	}, 100);
 	// simulate blur so the new comment will save
 	var event = new KeyboardEvent('blur');
-	document.querySelector('#question_submission_evaluation_comments').dispatchEvent(event);
+	document.querySelector('.form--textArea').dispatchEvent(event);
 }
 
 // comment has been clicked. Add it to the gradescope comment box.
@@ -296,20 +310,20 @@ function insertComment(comment, comment_id) {
 	comment = comment.replace(/\\"/g, '"').replace(/\\'/g, "'");
 
 	comments_inserted[comment_id] = comment;
-
-  	$("#question_submission_evaluation_comments").val(
-  		$("#question_submission_evaluation_comments").val() + "\n" + comment + "\n");
-  	$("#question_submission_evaluation_comments").height($("#question_submission_evaluation_comments")[0].scrollHeight);
-  	//console.log("doin it");
+		//find if the corresponding gradescope name changed
+  	$(".form--textArea").val(
+  		$(".form--textArea").val() + "\n" + comment + "\n");
+  	$(".form--textArea").height($(".form--textArea")[0].scrollHeight);
+  	//console.log("making the insertion");
   
   	// simulate blur so the new comment will save
   	var event = new KeyboardEvent('keydown');
-  	document.querySelector('#question_submission_evaluation_comments').dispatchEvent(event);
+  	document.querySelector('.form--textArea').dispatchEvent(event);
 }
 
 function searchComments(query, search_id) {
 	var id_num = search_id.split("search_")[1];
-
+	console.log("id_num in search "+id_num);
 	var result_comments = [];
 	var box_index = $("#" + id_num).index();
 	var comments_to_search = full_comments[box_index];
@@ -363,18 +377,22 @@ function injectSuggestions() {
 		display_setting = "";
 	}
 
+	//TODO: now gradescope has no id for the li.rubricEntryDragContainer
 	$("li.rubricEntryDragContainer").each(function(ind) {
-
+		var this_id=$(this).find(".rubricItem--key").html();
+			
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number]) { 
-
+			
+			//var this_id=$(this).find(".rubricItem--key").html();
+			//console.log("new var value is "+this_id);
 			$(this).append(
-				"<div class='see_suggestions' id='see_suggestions_" + this.id + "'>" + 
+				"<div class='see_suggestions' id='see_suggestions_" + this_id + "'>" + 
 					"<span class='toggle_word'>" + toggle_word + "</span> suggestions..." + 
 				"</div>" +
-				"<div id='suggestion_container_" + this.id + "' class='suggestion_container'" + display_setting + ">" +
-					"<div id='suggestion_box_" + this.id + "' class='rubric-comments suggestion_box'>" + 
-						"<input class='search_text' id='search_" + this.id + "' placeholder='Search...' type='text'></input>" +
+				"<div id='suggestion_container_" + this_id + "' class='suggestion_container'" + display_setting + ">" +
+					"<div id='suggestion_box_" + this_id + "' class='rubric-comments suggestion_box'>" + 
+						"<input class='search_text' id='search_" + this_id + "' placeholder='Search...' type='text'></input>" +
 						'<div class="first_header suggestion_header">"I wish..."</div>' +
 					      	"<table class='comments_bad comments_table'></table>" + 
 					    '<div class="suggestion_header">"I suggest..."</div>' +
@@ -383,20 +401,24 @@ function injectSuggestions() {
 					      	"<table class='comments_good comments_table'></table>" +
 					"</div>" + 
 					'<div class="comment_view">' +
-						'<textarea id="comment_view_' + this.id + '" class="comment_view_text"' + 
+						'<textarea id="comment_view_' + this_id + '" class="comment_view_text"' + 
 							' placeholder="Provide comments specific to this submission">' +
 						'</textarea>' +
 					'</div>' +
 				"</div>"
 			);
-			$(this).find(".comment_view_text").val($("#question_submission_evaluation_comments").val());
+			$(this).find(".comment_view_text").val($(".form--textarea").val());
 		}
 	});
 
-	// event listener to update everything when comment view text is changed
-	$(".comment_view_text").keydown(function() { updateCommentBox(this.id); });
+	$(".comment_view_text").keydown(function() { 
+		console.log("this id "+this.id);
+		updateCommentBox(this.id); });
 	$(".comment_view_text").focus(function() { 
-		var rubric_item = $(this).parents("li.rubric-item").find(".rubric-description").find(".mathInput--preview").html();
+		//console.log(this);
+
+		//I assume that rubric_item variable is the score like -0.5
+		var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 		// tell chrome to log the event that we just clicked the comment box
 		chrome.runtime.sendMessage({action: "logFocus",
 									rubric_question: rubric_name,
@@ -412,7 +434,7 @@ function injectSuggestions() {
 		var action = $("#see_suggestions_" + selected_id_num + " .toggle_word").html();
 		toggleSuggestionBox(selected_id_num);
 
-		var rubric_item = $(this).parents("li.rubric-item").find(".rubric-description").find(".mathInput--preview").html();
+		var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 		
 		// tell chrome to log the event that we just clicked see/hide
 		chrome.runtime.sendMessage({action: "logSuggestion" + action,
@@ -429,6 +451,8 @@ function injectSuggestions() {
 		//console.log(e.target.id);
 		searchComments($(this).val(), e.target.id);
 	});
+
+
 
 	// now that all the base code is there, load in the comments from the spreadsheet
 	chrome.runtime.sendMessage({action: "loadSpreadsheet"}, function(response) {
@@ -455,16 +479,16 @@ $(function() {
 		button_url = chrome.extension.getURL("button.png");
 
 		// get text currently in comment box
-		original_text = $("#question_submission_evaluation_comments").val();
+		original_text = $(".form--textArea").val();
 		console.log("original text:");
 		console.log(original_text);
 
 		// event listener for whenever comment box updates, to update all the comment views too
-		$("#question_submission_evaluation_comments").keydown(function() {
+		$(".form--textArea").keydown(function() {
 			updateCommentViews();
 		});
 
-		$("#question_submission_evaluation_comments").focus(function() { 
+		$(".form--textArea").focus(function() { 
 			// tell chrome to log the event that we just clicked the comment box
 			chrome.runtime.sendMessage({action: "logGradescopeFocus",
 										rubric_question: rubric_name,
@@ -475,7 +499,7 @@ $(function() {
 
 		// wait to receive the comments from spreadsheet
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-			//console.log("got comments message");
+			console.log("got comments message");
 			if (request.comments) {
 				console.log("storing and printing comments");
 				full_comments = filterComments(request.comments);
@@ -501,6 +525,9 @@ $(function() {
 
 		chrome.storage.local.set({student_id: student_id, rubric_number: rubric_number}, function() {
 			console.log("Saved page info");
+			chrome.storage.local.get(function(result){console.log(result)})
+
+
 		});
 
 		// get user id and settings
