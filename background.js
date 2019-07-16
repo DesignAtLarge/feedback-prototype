@@ -1,5 +1,9 @@
-var comment_sheet_id = "1-Xo0TcHNoSnbxtkGgiRcbnxcMip1R0PQFsrIOsiYevU";
-var event_sheet_id = "1pSgzEcft13sB3Lee_zNMkYD_WcDIUqKnjyP12XtLjzc";
+//W16-A10 is the comment sheet name used
+//A10 is the event sheet name used
+//NOTICE: make headings first for the table(A1:L1 for comment sheet) then do the insertions!!
+//otherwise, table range will be a mess
+var comment_sheet_id = "1HdcveHzPgCNc1lCp_Lfb7MX3O51p3u5jKrnxOw-66bQ";
+var event_sheet_id = "11mbvJusJtSQ4IjWPSwROlZdygijXDv0YWeI3LREfdbw";
 var user_id;
 var always_show;
 var on_grading_page;
@@ -53,7 +57,9 @@ function loadSpreadsheet() {
 }
 
 function updateSheets(action, rubric_question, rubric_item, comment_info, comment) {
-  console.log("updating sheets now...");
+
+  console.log("updating sheets now... for question "+rubric_question+"for item "+rubric_item);
+  console.log("comment_info is "+comment_info);
   // a comment was just inserted, update the google sheets to keep count & log this
   chrome.identity.getAuthToken({interactive: true}, function(token) {
     if (token) {

@@ -10,7 +10,7 @@
 
 var student_id;
 var rubric_name;
-var rubric_number;
+var rubric_number; //the question itself
 var user_id;
 var button_url;
 var full_comments;
@@ -21,6 +21,8 @@ var comment_text; // the text they have entered so far in the comment box
 var comments_inserted = {}; // list with text of comments they have inserted on this page. format: { id: text }
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
+
+//follow the demo, the key is the question itself and the value is the num of rubric items
 var num_rubric_items = {1: 4, 2: 3, 3: 4, 4: 3, 5: 4, 6: 2, 7: 6};
 
 // take in a list of all the comments for this rubric question
@@ -28,9 +30,9 @@ var num_rubric_items = {1: 4, 2: 3, 3: 4, 4: 3, 5: 4, 6: 2, 7: 6};
 function filterComments(comments) {
 	// first get only this rubric question number
 	
-	comments = comments.filter(function(comment) {
-		return (comment[7] != "0" && (comment[1].includes(rubric_number) || comment[1].includes("0")));
-	});
+	// comments = comments.filter(function(comment) {
+	// 	return (comment[7] != "0" && (comment[1].includes(rubric_number) || comment[1].includes("0")));
+	// });
 
 	var result = [];
 
@@ -76,16 +78,17 @@ function filterComments(comments) {
 // print all comments for this rubric question
 function storeAndPrintAllComments(comments) {
 	full_sorted_comments = comments;
-	console.log("in store and print all");
-	$(".rubric-item").each(function(ind) {
+	console.log("in store and print all comments");
+	$(".rubricItem--key").each(function(ind) {
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
-			//console.log("rubric item " + ind);
-			storeAndPrintComments(comments[ind], this.id, ind);
-			//console.log("storing comments for rubric item " + ind);
-			//console.log(comments[ind]);
-		} else if (ind < num_rubric_items[rubric_number]) {
-			$("#search_" + this.id).hide();
+			console.log("rubric item " + ind);
+			storeAndPrintComments(comments[ind], ind, ind);
+			console.log("storing comments for rubric item " + ind);
+			console.log(comments[ind]);
+		}
+		else if (ind < num_rubric_items[rubric_number]) {
+			$("#search_" + ind).hide();
 		}
 	});
 }
@@ -96,6 +99,7 @@ function storeAndPrintAllComments(comments) {
 // searching = true if this was called by the search function
 function storeAndPrintComments(comments, id_num, index, searching) {
 	console.log("id num in store and print "+id_num);
+	id_num=id_num+1;
 	// specifies which rubric item suggestion box we are adding to
 	var selector_addition = "#suggestion_box_" + id_num;
 	
@@ -323,9 +327,10 @@ function insertComment(comment, comment_id) {
 
 function searchComments(query, search_id) {
 	var id_num = search_id.split("search_")[1];
-	console.log("id_num in search "+id_num);
 	var result_comments = [];
 	var box_index = $("#" + id_num).index();
+	console.log("box index: "+box_index);
+	console.log("full comments has a thing: "+full_comments[0]);
 	var comments_to_search = full_comments[box_index];
 
 	for (var i = 0; i < comments_to_search.length; i++) {

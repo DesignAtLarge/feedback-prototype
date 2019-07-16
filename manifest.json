@@ -20,6 +20,7 @@
   },
 
   "permissions": [
+    "tabs",
     "activeTab",
     "storage",
     "identity",
@@ -38,8 +39,7 @@
     "persistent": false
   },
   "oauth2": {
-    "client_id": "429303545529-bag73oigjvq64981cd2f0rvvqbbekbqe.apps.googleusercontent.com", // debug
-    //"client_id": "429303545529-hq5ehbbgd6quoa2qneg2q3icqfjj50kg.apps.googleusercontent.com", //published
+    "client_id":"66462531215-mgror68snbk04d88ol3t4i7rnh0ul1j8.apps.googleusercontent.com",
     "scopes": [
       "https://spreadsheets.google.com/feeds"
     ]
