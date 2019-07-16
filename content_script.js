@@ -35,7 +35,7 @@ function filterComments(comments) {
 	// });
 
 	var result = [];
-
+	console.log("question number: "+rubric_number);
 	// deal with comments that apply to multiple rubric questions
 	/*for (var i = 0; i < comments.length; i++) {
 		var comment = comments[i]
@@ -58,7 +58,8 @@ function filterComments(comments) {
 		result.push(comments.filter(function(comment) {
 			/*var rubric_items = comment[2].split(" ");
 			return rubric_items.includes(i.toString());*/
-			return true;
+			return comment[1]==rubric_number;
+			//return true;
 		}));
 		i++;
 	}
@@ -78,6 +79,7 @@ function filterComments(comments) {
 // print all comments for this rubric question
 function storeAndPrintAllComments(comments) {
 	full_sorted_comments = comments;
+
 	console.log("in store and print all comments");
 	$(".rubricItem--key").each(function(ind) {
 		// don't show suggs for None rubric item
@@ -87,9 +89,9 @@ function storeAndPrintAllComments(comments) {
 			console.log("storing comments for rubric item " + ind);
 			console.log(comments[ind]);
 		}
-		else if (ind < num_rubric_items[rubric_number]) {
-			$("#search_" + ind).hide();
-		}
+		// else if (ind < num_rubric_items[rubric_number]) {
+		// 	$("#search_" + ind).hide();
+		// }
 	});
 }
 
@@ -225,13 +227,13 @@ function storeAndPrintComments(comments, id_num, index, searching) {
     // make insert buttons clickable
     $(".btn").unbind("click");
     $(".btn").click(function(obj) { 
-      // button clicked! insert suggestion
+	  // button clicked! insert suggestion
       var btn_id_num = $(this).attr("class").split(" ")[1];
 
 			// index of this rubric item = index of these comments in full_sorted_comments
 			//* find the gradescope correspondence here***
-      var this_index = $(this).parents("li.rubric-item").index();
-      //console.log(this_index);
+      var this_index = $(this).parents("div").find(".search_text").attr('id').slice(-1);
+      console.log(this_index);
 
       var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
       //console.log(comment);
@@ -328,10 +330,11 @@ function insertComment(comment, comment_id) {
 function searchComments(query, search_id) {
 	var id_num = search_id.split("search_")[1];
 	var result_comments = [];
+	//TODO:change box index, I think it should be 0 if we display all the comments?
 	var box_index = $("#" + id_num).index();
 	console.log("box index: "+box_index);
 	console.log("full comments has a thing: "+full_comments[0]);
-	var comments_to_search = full_comments[box_index];
+	var comments_to_search = full_comments[0];
 
 	for (var i = 0; i < comments_to_search.length; i++) {
 		var comment = comments_to_search[i];
@@ -507,6 +510,7 @@ $(function() {
 			console.log("got comments message");
 			if (request.comments) {
 				console.log("storing and printing comments");
+				//TODO: made the comments customized for each question(rubric_number)
 				full_comments = filterComments(request.comments);
 				//console.log(full_comments);
 				storeAndPrintAllComments(full_comments);
