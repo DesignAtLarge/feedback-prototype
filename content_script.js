@@ -1,16 +1,19 @@
+//NOTE: rubric_item is for the rubric item itself(i.e.:-0.5)
+
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
 //comment[1]==rubric_number
+//comment[3]==rubric_item
 //comment[4]==comment_id
 //comment[5]==comment text itself
 //comment[6]==length of comment text(string)
 //comment[8]==frequency
 //comment[11]==user_id
 
-
 var student_id;
 var rubric_name;
 var rubric_number; //the question itself
+var category_1; //category is the actionable, justifiable, and specific
 var user_id;
 var button_url;
 var full_comments;
@@ -81,11 +84,21 @@ function storeAndPrintAllComments(comments) {
 	full_sorted_comments = comments;
 
 	console.log("in store and print all comments");
+	rubric_item_dict={};
+	$(".rubricItem").each(function(){
+		var num=$(this).children("button").html();
+		console.log("num is "+num);
+		var item=$(this).children().children().html();
+		console.log("item IIS "+item);
+		rubric_item_dict[num]=item;
+	});
+	//console.log("val for rubric_item_dict[1] "+rubric_item_dict[1]);
 	$(".rubricItem--key").each(function(ind) {
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
-			console.log("rubric item " + ind);
-			storeAndPrintComments(comments[ind], ind, ind);
+			console.log("rubric item " + rubric_item_dict[ind+1]);
+			var rub=rubric_item_dict[ind+1];
+			storeAndPrintComments(rub,comments[ind], ind, ind);
 			console.log("storing comments for rubric item " + ind);
 			console.log(comments[ind]);
 		}
@@ -99,15 +112,24 @@ function storeAndPrintAllComments(comments) {
 // id_num is the rubric item's HTML id (a long number)
 // index is its index in the list of rubric items
 // searching = true if this was called by the search function
-function storeAndPrintComments(comments, id_num, index, searching) {
+function storeAndPrintComments(rub,comments, id_num, index, searching) {
 	console.log("id num in store and print "+id_num);
+
 	id_num=id_num+1;
+	fit_comments=comments.filter(function(comment){
+		return comment[3]==rub;
+	});
+	comments=fit_comments;
 	// specifies which rubric item suggestion box we are adding to
 	var selector_addition = "#suggestion_box_" + id_num;
-	
 	$(selector_addition + " .comments_good").html("");
 	$(selector_addition + " .comments_bad").html("");
 	$(selector_addition + " .comments_should").html("");
+
+	//if comments is empty, just return
+	if(comments.length==0){
+		return;
+	}
 
 	// sort comments ascending by length
     comments = comments.sort(function(info1, info2) {
@@ -150,7 +172,7 @@ function storeAndPrintComments(comments, id_num, index, searching) {
 
     comments = comments_non0.concat(comments_0);
 
-    //console.log(comments);
+    console.log(comments);
     // get max and min frequency
     var max_freq = parseInt(comments[0][8]);
     var min_freq = parseInt(comments[0][8]);
@@ -249,9 +271,10 @@ function storeAndPrintComments(comments, id_num, index, searching) {
 
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
-      var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-
-      console.log("inserting comment: " + comment);
+	  var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+	  var category=category_1;
+	  console.log("inserting comment: " + comment);
+	  console.log("comment category "+category)
       console.log(full_sorted_comments[this_index]);
       console.log(full_sorted_comments[this_index][btn_id_num]);
       var comment_id = full_sorted_comments[this_index][btn_id_num][0];
@@ -259,7 +282,8 @@ function storeAndPrintComments(comments, id_num, index, searching) {
       chrome.runtime.sendMessage({action: "logEvent", 
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
-      							rubric_item: rubric_item,
+								rubric_item: rubric_item,
+								comment_category:category,
       							comment: comment
       						}, function(response) {
       	console.log(response);
@@ -419,6 +443,27 @@ function injectSuggestions() {
 		}
 	});
 
+
+	$(".adjustmentForm").append(
+		"<div class='category_selection'>"+
+		"<form>"+
+		"<select class=category>"+
+		"<option value=1> specific</option>"+
+		"<option value=2> actionable</option>"+
+		"<option value=3> justified</option>"+
+		"</select>"+
+		"</form>"+
+		"</div>"
+	);
+
+	$(document).ready(function(){
+		$("select.category").change(function(){
+			var selectedCat = $(this).children("option:selected").val();
+			category_1=selectedCat;
+			console.log("category value  "+category_1)
+			//alert("You have selected the category - " + selectedCat);
+		});
+	});
 	$(".comment_view_text").keydown(function() { 
 		console.log("this id "+this.id);
 		updateCommentBox(this.id); });
