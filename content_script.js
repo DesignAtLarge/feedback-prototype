@@ -1,5 +1,5 @@
-//NOTE: rubric_item is for the rubric item itself(i.e.:-0.5)
-
+//NOTE: rubric_item is for the rubric item itself(i.e.:-0.5), now it would be fetch from the 
+//submissionGraderPoints>span
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
 //comment[1]==rubric_number
@@ -11,9 +11,9 @@
 //comment[11]==user_id
 
 var student_id;
+var category_1=0;
 var rubric_name;
 var rubric_number; //the question itself
-var category_1; //category is the actionable, justifiable, and specific
 var user_id;
 var button_url;
 var full_comments;
@@ -271,10 +271,9 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
 
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
-	  var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-	  var category=category_1;
+	  //var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+	  var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 	  console.log("inserting comment: " + comment);
-	  console.log("comment category "+category)
       console.log(full_sorted_comments[this_index]);
       console.log(full_sorted_comments[this_index][btn_id_num]);
       var comment_id = full_sorted_comments[this_index][btn_id_num][0];
@@ -283,10 +282,11 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
 								rubric_item: rubric_item,
-								comment_category:category,
+								comment_category:category_1,
       							comment: comment
       						}, function(response) {
-      	console.log(response);
+		  console.log(response);
+		  console.log("category RRRR: "+category);
       });      
 
     });
@@ -458,9 +458,8 @@ function injectSuggestions() {
 
 	$(document).ready(function(){
 		$("select.category").change(function(){
-			var selectedCat = $(this).children("option:selected").val();
-			category_1=selectedCat;
-			console.log("category value  "+category_1)
+			category_1 = $(this).children("option:selected").val();
+			console.log("category value  "+category_1);
 			//alert("You have selected the category - " + selectedCat);
 		});
 	});
@@ -471,13 +470,16 @@ function injectSuggestions() {
 		//console.log(this);
 
 		//I assume that rubric_item variable is the score like -0.5
-		var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+		//first step to make the ONLY comment box available
+		var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 		// tell chrome to log the event that we just clicked the comment box
 		chrome.runtime.sendMessage({action: "logFocus",
 									rubric_question: rubric_name,
 									rubric_item: rubric_item
 			}, function(response) {
 				console.log("logging focus: " + response);
+				//console.log("RRRRRRRRR "+rubric_item);
 		});
 	});
 
@@ -487,8 +489,8 @@ function injectSuggestions() {
 		var action = $("#see_suggestions_" + selected_id_num + " .toggle_word").html();
 		toggleSuggestionBox(selected_id_num);
 
-		var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-		
+		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+		var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 		// tell chrome to log the event that we just clicked see/hide
 		chrome.runtime.sendMessage({action: "logSuggestion" + action,
 									rubric_question: rubric_name,
@@ -516,7 +518,7 @@ function injectSuggestions() {
 $(function() {
 
 	rubric_name = $(".submissionGraderSidebar--title > span > span").html();
-
+	//console.log("RRRRRDD "+rubric_item);
 	//TODO: get student id
 	student_id = "temp";
 	rubric_number = rubric_name.split(":")[0];
