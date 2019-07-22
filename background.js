@@ -8,7 +8,6 @@ var user_id;
 var always_show;
 var on_grading_page;
 var store_rubric_item;
-var store_category="0";
 
 function loadSpreadsheet() {
   console.log("loadding spreadsheet now.....")
@@ -58,9 +57,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, rubric_question, rubric_item, comment_info, comment,category) {
-  store_category=category;
-  console.log("category to be stored= "+category)
+function updateSheets(action, rubric_question, rubric_item, comment_info, comment) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
@@ -256,7 +253,6 @@ function saveNewComment() {
           if (already_there) continue;
 
           var comment_length = comment.split(" ").length;
-          console.log("storeed cat before store "+store_category)
           // rubric question number (b) = items.rubric_number
           // if comment = one of the inserted comments, original id (e) = that inserted comment's id
           //    then remove that comment from inserted comments
@@ -266,7 +262,7 @@ function saveNewComment() {
           // frequency (i) = 1
           // frequency orig (j) = 1
           values += '[ "", "' + rubric_number + '", "", "'+store_rubric_item+'","", "' + 
-              comment + '", "' + comment_length + '", "'+store_category+'", "1", "1", "", "' + user_id + '"' + 
+              comment + '", "' + comment_length + '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
 
         }
@@ -278,7 +274,7 @@ function saveNewComment() {
         if (inserted_comments[comment_id] != "") {
           values += '[ "", "' + rubric_number + '", "", "'+store_rubric_item+","+ comment_id + '", "' + 
               inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].split(" ").length + 
-              '", "0", "1", "1", "", "' + user_id + '"' + 
+              '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
         }
       }
@@ -362,7 +358,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     loadSpreadsheet();
     sendResponse("done");
   } else if (request.action == "logEvent") {
-    updateSheets("comment", request.rubric_question, request.rubric_item, request.comment_info, request.comment,request.comment_category);
+    updateSheets("comment", request.rubric_question, request.rubric_item, request.comment_info, request.comment);
     sendResponse("event logged");
   } else if (request.action == "logShowSetting") {
     updateSheets("change setting");

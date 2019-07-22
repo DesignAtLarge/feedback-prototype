@@ -11,7 +11,6 @@
 //comment[11]==user_id
 
 var student_id;
-var category_1=0;
 var rubric_name;
 var rubric_number; //the question itself
 var user_id;
@@ -282,7 +281,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
 								rubric_item: rubric_item,
-								comment_category:category_1,
       							comment: comment
       						}, function(response) {
 		  console.log(response);
@@ -432,41 +430,44 @@ function injectSuggestions() {
 					    '<div class="suggestion_header">"I like..."</div>' +
 					      	"<table class='comments_good comments_table'></table>" +
 					"</div>" + 
-					'<div class="comment_view">' +
-						'<textarea id="comment_view_' + this_id + '" class="comment_view_text"' + 
-							' placeholder="Provide comments specific to this submission">' +
-						'</textarea>' +
-					'</div>' +
 				"</div>"
 			);
 			$(this).find(".comment_view_text").val($(".form--textarea").val());
 		}
 	});
 
-
-	$(".adjustmentForm").append(
+	//TODO
+	$(
 		"<div class='category_selection'>"+
-		"<form>"+
-		"<select class=category>"+
-		"<option value=1> specific</option>"+
-		"<option value=2> actionable</option>"+
-		"<option value=3> justified</option>"+
-		"</select>"+
-		"</form>"+
+		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
+		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
+		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is justified"+
 		"</div>"
-	);
+	).insertAfter(".form--textArea");
 
+
+	//disable the nextQuestion button until all checkbox clicked
 	$(document).ready(function(){
-		$("select.category").change(function(){
-			category_1 = $(this).children("option:selected").val();
-			console.log("category value  "+category_1);
-			//alert("You have selected the category - " + selectedCat);
-		});
+		$(".actionBar--action-next").attr('disabled',true);
 	});
-	$(".comment_view_text").keydown(function() { 
-		console.log("this id "+this.id);
-		updateCommentBox(this.id); });
-	$(".comment_view_text").focus(function() { 
+
+	$(document).change(function(){
+		var count=$('input[name="category"]:checked').length;
+		if(count==3){
+			$(".actionBar--action-next").attr('disabled',false);
+		}else{
+			$(".actionBar--action-next").attr('disabled',true);
+		}
+
+		// $(".catCheck").change(function(){
+		// 	$(".actionBar--action-next").attr('disabled',!this.checked);
+		// 	//alert("You have selected the category - " + selectedCat);
+		// }).change();
+	});
+	// $(".comment_view_text").keydown(function() { 
+	// 	console.log("this id "+this.id);
+	// 	updateCommentBox(this.id); });
+	$(".form--textArea").focus(function() { 
 		//console.log(this);
 
 		//I assume that rubric_item variable is the score like -0.5
@@ -539,9 +540,28 @@ $(function() {
 		console.log(original_text);
 
 		// event listener for whenever comment box updates, to update all the comment views too
-		$(".form--textArea").keydown(function() {
-			updateCommentViews();
-		});
+		 $(".form--textArea").keydown(function() {
+			setTimeout(function(){ 
+				
+				// save current text
+				comment_text = $('.form--textArea').val();
+		
+				if (original_text != "") {
+					var split = comment_text.split(original_text);
+					if (split.length == 2) {
+						comment_text = split[1];
+					} else {
+						comment_text = split[0];
+					}
+				}
+				console.log("got updated comments: ")
+				console.log(comment_text);
+		
+				chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
+					comments_rubric_number: rubric_number, saved: false});
+			}, 100);
+
+		 });
 
 		$(".form--textArea").focus(function() { 
 			// tell chrome to log the event that we just clicked the comment box
