@@ -8,6 +8,7 @@ var user_id;
 var always_show;
 var on_grading_page;
 var store_rubric_item;
+var last_row=1;//fetch the last row in the spreadsheets, used for the id field
 
 function loadSpreadsheet() {
   console.log("loadding spreadsheet now.....")
@@ -40,10 +41,17 @@ function loadSpreadsheet() {
       xhr.open("GET", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!A2:K10000",
         true);
+
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.responseType = "json";
 
       xhr.send();
+
+      xhr.onload = function (oEvent) {
+        arrayBuffer = xhr.response; 
+        last_row=arrayBuffer.values.length+1;
+        console.log("last row is " + last_row);
+    }
 
 
 
@@ -261,10 +269,10 @@ function saveNewComment() {
           // category (h) = 0
           // frequency (i) = 1
           // frequency orig (j) = 1
-          values += '[ "", "' + rubric_number + '", "", "'+store_rubric_item+'","", "' + 
+          values += '[ "'+parseInt(last_row+1)+'", "' + rubric_number + '", "", "'+store_rubric_item+'","", "' + 
               comment + '", "' + comment_length + '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
-
+          last_row++;
         }
       }
 
