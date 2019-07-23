@@ -25,7 +25,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // this is specific to A6
 
 //follow the demo, the key is the question itself and the value is the num of rubric items
-var num_rubric_items = {1: 4, 2: 3, 3: 4, 4: 3, 5: 4, 6: 2, 7: 6};
+var num_rubric_items = {1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20};
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
@@ -253,7 +253,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
 
 			// index of this rubric item = index of these comments in full_sorted_comments
 			//* find the gradescope correspondence here***
-      var this_index = $(this).parents("div").find(".search_text").attr('id').slice(-1);
+      var this_index = $(this).parents("div").find(".search_text").attr('id').slice(-1)-1;
       console.log(this_index);
 
       var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
@@ -525,6 +525,18 @@ $(function() {
 	rubric_number = rubric_name.split(":")[0];
 	//console.log("rubric number: " + rubric_number);
 	var rubric_name_lower = rubric_name.toLowerCase();
+
+
+	//Add a new rubric item, then it should refresh on thei
+	$(document).on('DOMNodeInserted', function(e) {
+		console.log("should REFRESH!");
+		//console.log(e.target);
+		if ( $(e.target).hasClass('rubricEntryDragContainer') ) {
+		   //element with rubricItem was inserted, refresh the page
+		   alert("Sorry dude, the page needs to be reloaded to update rubric items, click 'OK' to continue");
+		   window.location.reload();
+		}
+	});
 
 	// change true so that it only works on grading pages
 	if (true) {
