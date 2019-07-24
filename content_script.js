@@ -1,3 +1,16 @@
+//Special NOTE: change of rubric_item, the original rubric_item is based on the mark deducted. Thus, if the rubric
+//change the score input, original related comments won't be displayed. Thus, now it changed to match the number related to item,
+//if you want to store in the original way, copy the code below and change rubric item:
+//var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+//and remember to add the dict to fetch the rubric item in the middle
+	// $(".rubricItem").each(function(){
+	// 	var num=$(this).children("button").html();
+	// 	console.log("num is "+num);
+	// 	var item=$(this).children().children().html();
+	// 	console.log("item IIS "+item);
+	// 	rubric_item_dict[num]=item;
+	// });
+
 //NOTE: rubric_item is for the rubric item itself(i.e.:-0.5), now it would be fetch from the 
 //submissionGraderPoints>span
 //note before start: refer to background.js for why there
@@ -84,19 +97,12 @@ function storeAndPrintAllComments(comments) {
 
 	console.log("in store and print all comments");
 	rubric_item_dict={};
-	$(".rubricItem").each(function(){
-		var num=$(this).children("button").html();
-		console.log("num is "+num);
-		var item=$(this).children().children().html();
-		console.log("item IIS "+item);
-		rubric_item_dict[num]=item;
-	});
+
 	//console.log("val for rubric_item_dict[1] "+rubric_item_dict[1]);
 	$(".rubricItem--key").each(function(ind) {
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
-			console.log("rubric item " + rubric_item_dict[ind+1]);
-			var rub=rubric_item_dict[ind+1];
+			var rub=ind+1;
 			storeAndPrintComments(rub,comments[ind], ind, ind);
 			console.log("storing comments for rubric item " + ind);
 			console.log(comments[ind]);
@@ -271,7 +277,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
 	  //var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-	  var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+	  var rubric_item=$(".rubricItem--key-applied").html();
 	  console.log("inserting comment: " + comment);
       console.log(full_sorted_comments[this_index]);
       console.log(full_sorted_comments[this_index][btn_id_num]);
@@ -432,7 +438,7 @@ function injectSuggestions() {
 					"</div>" + 
 				"</div>"
 			);
-			$(this).find(".comment_view_text").val($(".form--textarea").val());
+			//$(this).find(".comment_view_text").val($(".form--textarea").val());
 		}
 	});
 
@@ -473,7 +479,7 @@ function injectSuggestions() {
 		//I assume that rubric_item variable is the score like -0.5
 		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 		//first step to make the ONLY comment box available
-		var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+		var rubric_item=$(".rubricItem--key-applied").html();
 		// tell chrome to log the event that we just clicked the comment box
 		chrome.runtime.sendMessage({action: "logFocus",
 									rubric_question: rubric_name,
@@ -491,7 +497,7 @@ function injectSuggestions() {
 		toggleSuggestionBox(selected_id_num);
 
 		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-		var rubric_item=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+		var rubric_item=$(".rubricItem--key-applied").html();
 		// tell chrome to log the event that we just clicked see/hide
 		chrome.runtime.sendMessage({action: "logSuggestion" + action,
 									rubric_question: rubric_name,
@@ -529,7 +535,7 @@ $(function() {
 
 	//Add a new rubric item, then it should refresh on thei
 	$(document).on('DOMNodeInserted', function(e) {
-		console.log("should REFRESH!");
+		//console.log("should REFRESH!");
 		//console.log(e.target);
 		if ( $(e.target).hasClass('rubricEntryDragContainer') ) {
 		   //element with rubricItem was inserted, refresh the page
@@ -538,6 +544,17 @@ $(function() {
 		}
 	});
 
+	// $('rubricEntryDragContainer').ready(function(){
+	// 	console.log("AAAAAAAADASDAS in func");
+	// 	if(!$(this).hasClass("rubricItem--key-applied")){
+	// 		console.log("BBBBBBSAAA func");
+	// 		$(".suggestion_container").css('display','none');
+	// 	}else{
+	// 		var id=$("rubricItem--key-applied").attr('id');
+	// 		$('#suggestion_container_'+id).css('display','block');
+	// 	}
+		
+	// });
 	// change true so that it only works on grading pages
 	if (true) {
 
