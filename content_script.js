@@ -446,8 +446,8 @@ function injectSuggestions() {
 	$(
 		"<div class='category_selection'>"+
 		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
-		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
-		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is justified"+
+		"<input type='checkbox' class='catCheck--act' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
+		"<input type='checkbox' class='catCheck--just' name='category' value='checkbox' style='height:10px; width:10px;'>Is justified"+
 		"</div>"
 	).insertAfter(".form--textArea");
 
@@ -455,6 +455,18 @@ function injectSuggestions() {
 	//disable the nextQuestion button until all checkbox clicked
 	$(document).ready(function(){
 		$(".actionBar--action-next").attr('disabled',true);
+	});
+
+	$(document).change(function(){
+		comment_text = $('.form--textArea').val();
+		comment_split=comment_text.split(" ");
+		if (comment_split.has('may')||comment_split.has('should')){
+			$('.catCheck--act').prop('checked',true);
+		}
+		if(comment_split.has('because')||comment_split.has('so')){
+			$('.catCheck--just').prop('checked',true);
+		}
+		
 	});
 
 	$(document).change(function(){
@@ -544,17 +556,12 @@ $(function() {
 		}
 	});
 
-	// $('rubricEntryDragContainer').ready(function(){
-	// 	console.log("AAAAAAAADASDAS in func");
-	// 	if(!$(this).hasClass("rubricItem--key-applied")){
-	// 		console.log("BBBBBBSAAA func");
-	// 		$(".suggestion_container").css('display','none');
-	// 	}else{
-	// 		var id=$("rubricItem--key-applied").attr('id');
-	// 		$('#suggestion_container_'+id).css('display','block');
-	// 	}
+	$(document).ready(function(){
+		$("rubricItem--key").click(function(){
+			$(".suggestion_container").css('display','block');
+		});
 		
-	// });
+	});
 	// change true so that it only works on grading pages
 	if (true) {
 
