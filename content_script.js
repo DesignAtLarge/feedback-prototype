@@ -15,6 +15,7 @@
 //submissionGraderPoints>span
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
+//comment[0]==id(row number in google sheet)
 //comment[1]==rubric_number
 //comment[3]==rubric_item
 //comment[4]==comment_id
@@ -445,7 +446,9 @@ function injectSuggestions() {
 	//TODO
 	$(
 		"<div class='category_selection'>"+
-		"<input type='checkbox' class='catCheck' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
+		"<span style='color:red'>If you believe your comment meets the criteria listed below, check them.</span>"+
+		"<br/>"+
+		"<input type='checkbox' class='catCheck--spec' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
 		"<input type='checkbox' class='catCheck--act' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
 		"<input type='checkbox' class='catCheck--just' name='category' value='checkbox' style='height:10px; width:10px;'>Is justified"+
 		"</div>"
@@ -457,13 +460,14 @@ function injectSuggestions() {
 		$(".actionBar--action-next").attr('disabled',true);
 	});
 
+	//TODO: change the context, it takes a bit of time to reflect
 	$(document).change(function(){
 		comment_text = $('.form--textArea').val();
 		comment_split=comment_text.split(" ");
-		if (comment_split.has('may')||comment_split.has('should')){
+		if (comment_split.includes('may')||comment_split.includes('should')){
 			$('.catCheck--act').prop('checked',true);
 		}
-		if(comment_split.has('because')||comment_split.has('so')){
+		if(comment_split.includes('because')||comment_split.includes('so')){
 			$('.catCheck--just').prop('checked',true);
 		}
 		
@@ -477,11 +481,30 @@ function injectSuggestions() {
 			$(".actionBar--action-next").attr('disabled',true);
 		}
 
-		// $(".catCheck").change(function(){
-		// 	$(".actionBar--action-next").attr('disabled',!this.checked);
-		// 	//alert("You have selected the category - " + selectedCat);
-		// }).change();
+
 	});
+
+	//hide all the suggestion first, then let the related suggestions pop up as needed
+	$(document).ready(function(){
+		hideAllSuggestions();
+		id_already_there=$('.rubricItem--key-applied').html();
+		if (!$('suggestion_container_'+id_already_there).is(":visible")) {
+			toggleSuggestionBox(id_already_there);
+		}
+	});
+
+	//toggle event for the suggesiton box
+	$('.rubricItem--key').click(function(){
+			var id=$(this).html();
+			console.log("IIID is: "+id);
+			if (!$('suggestion_container_'+id).is(":visible")) {
+				toggleSuggestionBox(id);
+			}
+			//$('suggestion_container_'+id).toggle();
+			//toggleSuggestionBox(id);
+	});
+
+
 	// $(".comment_view_text").keydown(function() { 
 	// 	console.log("this id "+this.id);
 	// 	updateCommentBox(this.id); });
