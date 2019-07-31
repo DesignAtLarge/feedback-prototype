@@ -90,7 +90,7 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
           }
         };
 
-        var row = parseInt(comment_info[0]) + 2;
+        var row = parseInt(comment_info[0]);
         var cur_frequency = parseInt(comment_info[8]);
         console.log("comment was from row " + row);
         console.log("frequency was " + cur_frequency);

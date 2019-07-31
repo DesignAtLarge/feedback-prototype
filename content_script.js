@@ -16,6 +16,7 @@
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
 //comment[0]==id(row number in google sheet)
+
 //comment[1]==rubric_number
 //comment[3]==rubric_item
 //comment[4]==comment_id
@@ -40,6 +41,11 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 
 //follow the demo, the key is the question itself and the value is the num of rubric items
 var num_rubric_items = {1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20};
+
+$(document).ready(function(){
+	original_text=$('.form--textArea').val();
+});
+
 
 // take in a list of all the comments for this rubric question
 // return result: a list of lists where result[i] is a list holding the comments for rubric item i
@@ -104,7 +110,7 @@ function storeAndPrintAllComments(comments) {
 		// don't show suggs for None rubric item
 		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
 			var rub=ind+1;
-			storeAndPrintComments(rub,comments[ind], ind, ind);
+			storeAndPrintComments(rub,comments[ind], ind, ind,false,false);
 			console.log("storing comments for rubric item " + ind);
 			console.log(comments[ind]);
 		}
@@ -118,7 +124,7 @@ function storeAndPrintAllComments(comments) {
 // id_num is the rubric item's HTML id (a long number)
 // index is its index in the list of rubric items
 // searching = true if this was called by the search function
-function storeAndPrintComments(rub,comments, id_num, index, searching) {
+function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	console.log("id num in store and print "+id_num);
 
 	id_num=id_num+1;
@@ -127,10 +133,14 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
 	});
 	comments=fit_comments;
 	// specifies which rubric item suggestion box we are adding to
+	if(PDF){
+		var selector_addition="#suggestion_box_pdf_"+id_num
+	}else{
 	var selector_addition = "#suggestion_box_" + id_num;
+	}
 	$(selector_addition + " .comments_good").html("");
-	$(selector_addition + " .comments_bad").html("");
-	$(selector_addition + " .comments_should").html("");
+	// $(selector_addition + " .comments_bad").html("");
+	// $(selector_addition + " .comments_should").html("");
 
 	//if comments is empty, just return
 	if(comments.length==0){
@@ -210,20 +220,22 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
       if (comments[i][10] != undefined) {
 	    blank_values = comments[i][10].split(", ");
 	  }
-
+	  if(!PDF){
       var string = "<tr"  + 
         " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
         	"<td><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
-
+	  }else{
+		var string = "<tr"  + 
+        " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
+        	"<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
+        	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
+        "</tr>";
+	  }
       if (category == "1") {
         $(selector_addition + " .comments_good").append(string);
-      } else if (category == "2") {
-        $(selector_addition + " .comments_bad").append(string);
-      } else if (category == "3") {
-        $(selector_addition + " .comments_should").append(string);
-      } else {
+	  }else {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
 
@@ -241,7 +253,9 @@ function storeAndPrintComments(rub,comments, id_num, index, searching) {
 	  }
     }
 
-    
+
+
+	
     
     if (!searching) {
     	// save these for the button callback's use
@@ -311,6 +325,7 @@ function updateCommentViews(view_id) {
 
 		if (original_text != "") {
 			var split = comment_text.split(original_text);
+			console.log("split is: "+split);
 			if (split.length == 2) {
 				comment_text = split[1];
 			} else {
@@ -430,11 +445,7 @@ function injectSuggestions() {
 				"<div id='suggestion_container_" + this_id + "' class='suggestion_container'" + display_setting + ">" +
 					"<div id='suggestion_box_" + this_id + "' class='rubric-comments suggestion_box'>" + 
 						"<input class='search_text' id='search_" + this_id + "' placeholder='Search...' type='text'></input>" +
-						'<div class="first_header suggestion_header">"I wish..."</div>' +
-					      	"<table class='comments_bad comments_table'></table>" + 
-					    '<div class="suggestion_header">"I suggest..."</div>' +
-					      	"<table class='comments_should comments_table'></table>" +
-					    '<div class="suggestion_header">"I like..."</div>' +
+					    '<div class="first_header suggestion_header">Suggestions:</div>' +
 					      	"<table class='comments_good comments_table'></table>" +
 					"</div>" + 
 				"</div>"
@@ -503,6 +514,25 @@ function injectSuggestions() {
 			//$('suggestion_container_'+id).toggle();
 			//toggleSuggestionBox(id);
 	});
+
+
+$(document).change(function(){
+	if($('.taBox--textArea')){
+		rubric_item=$(".rubricItem--key-applied").html()
+		$('.taBox--textArea').append(
+
+		"<div class='suggestion_container_pdf'" + display_setting + ">" +
+			"<div class='rubric-comments suggestion_box_pdf_'>" + 
+				'<div class="suggestion_header">"I like..."</div>' +
+					  "<table class='comments_good comments_table'></table>" +
+			"</div>" + 
+		"</div>"
+		);
+		storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
+	}
+
+});
+
 
 
 	// $(".comment_view_text").keydown(function() { 
@@ -594,7 +624,7 @@ $(function() {
 		button_url = chrome.extension.getURL("button.png");
 
 		// get text currently in comment box
-		original_text = $(".form--textArea").val();
+		//original_text = $(".form--textArea").val();
 		console.log("original text:");
 		console.log(original_text);
 
@@ -604,9 +634,9 @@ $(function() {
 				
 				// save current text
 				comment_text = $('.form--textArea').val();
-		
 				if (original_text != "") {
 					var split = comment_text.split(original_text);
+					console.log("comment split AAA: "+split);
 					if (split.length == 2) {
 						comment_text = split[1];
 					} else {
