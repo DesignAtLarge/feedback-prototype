@@ -497,38 +497,76 @@ function injectSuggestions() {
 
 	//hide all the suggestion first, then let the related suggestions pop up as needed
 	$(document).ready(function(){
+		if(!always_show){
 		hideAllSuggestions();
 		id_already_there=$('.rubricItem--key-applied').html();
 		if (!$('suggestion_container_'+id_already_there).is(":visible")) {
 			toggleSuggestionBox(id_already_there);
 		}
+	}
 	});
 
-	//toggle event for the suggesiton box
-	$('.rubricItem--key').click(function(){
-			var id=$(this).html();
-			console.log("IIID is: "+id);
-			if (!$('suggestion_container_'+id).is(":visible")) {
-				toggleSuggestionBox(id);
+
+
+//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
+// Select the node that will be observed for mutations
+const targetNode = document.getElementsByClassName('rubricItem--key');
+console.log(targetNode);
+
+// Options for the observer (which mutations to observe)
+const config = { attributes: true, childList: true, subtree: true };
+
+
+const callback = function(mutationsList, observer) {
+    for(let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            console.log('A child node has been added or removed.');
+        }
+        else if (mutation.type === 'attributes') {
+			var classList = mutation.target.className;
+			if(classList.indexOf("rubricItem--key-applied")>=0){
+				if(!always_show){
+				var id=$('.rubricItem--key-applied').html();
+				console.log("IIID is: "+id);
+				if (!$('suggestion_container_'+id).is(":visible")) {
+					toggleSuggestionBox(id);
+				}
 			}
-			//$('suggestion_container_'+id).toggle();
-			//toggleSuggestionBox(id);
-	});
+			}else{
+				var id=$(mutation.target).html();
+				console.log("IIID  dis appear is: "+id);
+				if (!$('suggestion_container_'+id).is(":visible")) {
+					toggleSuggestionBox(id);
+				}
+			}
+
+        }
+    }
+};
+
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback);
+
+// // Start observing the target node for configured mutations
+for(var i=0;i<targetNode.length;i++){
+observer.observe(targetNode[i], config);
+}
 
 
-$(document).change(function(){
-	if($('.taBox--textArea')){
+$(document).ready(function(){
+	if($('.taBox--textarea')[0]){
+		console.log("baofengyu laiin");
 		rubric_item=$(".rubricItem--key-applied").html()
-		$('.taBox--textArea').append(
 
-		"<div class='suggestion_container_pdf'" + display_setting + ">" +
-			"<div class='rubric-comments suggestion_box_pdf_'>" + 
-				'<div class="suggestion_header">"I like..."</div>' +
-					  "<table class='comments_good comments_table'></table>" +
-			"</div>" + 
-		"</div>"
-		);
-		storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
+		// $("<div class='suggestion_container_pdf'" + display_setting + ">" +
+		// 	"<div class='rubric-comments suggestion_box_pdf_'>" + 
+		// 		'<div class="suggestion_header">"I like..."</div>' +
+		// 			  "<table class='comments_good comments_table'></table>" +
+		// 	"</div>" + 
+		// "</div>"
+		// ).insertAfter('.taBox--textarea');
+		$("<div style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
+		//storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
 	}
 
 });
@@ -587,6 +625,11 @@ $(document).change(function(){
 	});
 }
 
+
+
+
+
+
 $(function() {
 
 	rubric_name = $(".submissionGraderSidebar--title > span > span").html();
@@ -634,15 +677,15 @@ $(function() {
 				
 				// save current text
 				comment_text = $('.form--textArea').val();
-				if (original_text != "") {
-					var split = comment_text.split(original_text);
-					console.log("comment split AAA: "+split);
-					if (split.length == 2) {
-						comment_text = split[1];
-					} else {
-						comment_text = split[0];
-					}
-				}
+				// if (original_text != "") {
+				// 	var split = comment_text.split(original_text);
+				// 	console.log("comment split AAA: "+split);
+				// 	if (split.length == 2) {
+				// 		comment_text = split[1];
+				// 	} else {
+				// 		comment_text = split[0];
+				// 	}
+				// }
 				console.log("got updated comments: ")
 				console.log(comment_text);
 		
