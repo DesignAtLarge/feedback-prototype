@@ -40,7 +40,10 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // this is specific to A6
 
 //follow the demo, the key is the question itself and the value is the num of rubric items
-var num_rubric_items = {1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20};
+var num_rubric_items = {1.1:20,1.2:20,1.3:20,1.4: 20,1.5: 20, 2.1:20,2.2:20, 2.3: 20, 3.1:20, 3.2:20, 3.3:20, 3.4:20, 3.5:20, 4.1:20,
+	4.2: 20, 4.3:20, 4.4:20, 4.5:20, 5.1:20, 5.2:20,5.3:20, 5.4:20, 5.5:20,6.1:20,6.2:20,6.3:20,6.4: 20,6.5: 20,
+	7.1:20,7.2:20,7.3:20,7.4: 20,7.5: 20,
+	 1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20};
 
 $(document).ready(function(){
 	original_text=$('.form--textArea').val();
@@ -647,7 +650,7 @@ $(function() {
 		//console.log(e.target);
 		if ( $(e.target).hasClass('rubricEntryDragContainer') ) {
 		   //element with rubricItem was inserted, refresh the page
-		   alert("Sorry dude, the page needs to be reloaded to update rubric items, click 'OK' to continue");
+		   //alert("Sorry dude, the page needs to be reloaded to update rubric items, click 'OK' to continue");
 		   window.location.reload();
 		}
 	});
