@@ -92,3 +92,17 @@ a[disabled="disabled"] {
   cursor: default;
 }
 
+
+.suggestion_container_pdf{
+  position: relative;
+  border: 1px solid black;
+}
+
+.suggestion_box_pdf {
+  border: 1px solid #004ea3 !important;
+  height: 200px;
+  overflow-y: scroll !important;
+  background-color: rgba(74,74,74,0.03) !important;
+  position: relative;
+}
+
