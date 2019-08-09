@@ -78,16 +78,16 @@ function filterComments(comments) {
 	}*/
 
 	// add comments for each rubric item
-	var i = 0;
-	while (i < num_rubric_items[rubric_number]) {
+	//  var i = 0;
+	// while (i < num_rubric_items[rubric_number]) {
 		result.push(comments.filter(function(comment) {
 			/*var rubric_items = comment[2].split(" ");
 			return rubric_items.includes(i.toString());*/
 			return comment[1]==rubric_number;
 			//return true;
 		}));
-		i++;
-	}
+	// 	i++;
+	// }
 
 	// now if any of them turned out empty, use all the comments for that rubric item
 	/*for (var j=0; j < result.length; j++) {
@@ -110,12 +110,21 @@ function storeAndPrintAllComments(comments) {
 
 	//console.log("val for rubric_item_dict[1] "+rubric_item_dict[1]);
 	$(".rubricItem--key").each(function(ind) {
+		var i=0;
+		var com_for_item=[];
+		for(i=0;i<comments[0].length;i++){
+			var comment=comments[0][i];
+			if(comment[3]==(ind+1)){
+				com_for_item.push(comment);
+			}
+		}
+		console.log(com_for_item);
 		// don't show suggs for None rubric item
-		if (ind < num_rubric_items[rubric_number] && comments[ind].length > 0) { 
+		if (ind < num_rubric_items[rubric_number] && com_for_item.length > 0) { 
 			var rub=ind+1;
-			storeAndPrintComments(rub,comments[ind], ind, ind,false,false);
+			storeAndPrintComments(rub,com_for_item, ind, ind,false,false);
 			console.log("storing comments for rubric item " + ind);
-			console.log(comments[ind]);
+			//console.log(comments[ind]);
 		}
 		// else if (ind < num_rubric_items[rubric_number]) {
 		// 	$("#search_" + ind).hide();
@@ -419,20 +428,22 @@ function searchComments(query, search_id) {
 	var id_num = search_id.split("search_")[1];
 	var result_comments = [];
 	//TODO:change box index, I think it should be 0 if we display all the comments?
-	var box_index = $("#" + id_num).index();
+	var box_index = id_num;
 	console.log("box index: "+box_index);
-	console.log("full comments has a thing: "+full_comments[0]);
-	var comments_to_search = full_comments[0];
-
-	for (var i = 0; i < comments_to_search.length; i++) {
-		var comment = comments_to_search[i];
+	//console.log("full comments has a thing: "+typeof(Object.values(full_comments)));
+	var comments_to_search = full_comments;
+	console.log(full_comments);
+	for (var i = 0; i < comments_to_search[0].length; i++) {
+		var comment = comments_to_search[0][i];
+		console.log(comment);
 		if (comment[5].toLowerCase().includes(query.toLowerCase())) {
+			console.log(comment);
 			result_comments.push(comment);
 		}
 	}
 	console.log("calling store and print from search");
 	console.log(result_comments);
-	storeAndPrintComments(result_comments, id_num, $("#" + id_num).index(), true);
+	storeAndPrintComments(id_num,result_comments, id_num-1, id_num-1, true,false);
 }
 
 function toggleSuggestionBox(id_num) {
@@ -788,10 +799,12 @@ $(function() {
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			console.log("got comments message");
 			if (request.comments) {
+				
 				console.log("storing and printing comments");
+				console.log(request.comments);
 				//TODO: made the comments customized for each question(rubric_number)
 				full_comments = filterComments(request.comments);
-				//console.log(full_comments);
+				console.log(full_comments);
 				storeAndPrintAllComments(full_comments);
 				sendResponse("stored");
 			// or a notification that the user changed the always show setting
