@@ -177,7 +177,16 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       } else {
         return 1;
       }
-    });
+	});
+	
+
+	comments= comments.sort(function(info1,info2){
+		var nameA= (info1[5].split(' '))[0].toLowerCase();
+		var nameB = (info2[5].split(' '))[0].toLowerCase();
+		if(nameA === nameB) return 0; 
+    	return nameA > nameB ? 1 : -1;
+
+	});
 
     //A10: put non-0 comments first (ones specific to this rubric question)
     var comments_0 = [];
@@ -274,7 +283,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 	//add the comment to the ta-box when the btn_pdf is clicked
 	$('.btn_pdf').unbind("click");
-	$('.btn_pdf').click(function(obj){
+	$('.btn_pdf').on('click','.taBox',function(obj){
 		console.log("booooooo");
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).html();
