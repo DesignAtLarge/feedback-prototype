@@ -25,6 +25,9 @@
 //comment[8]==frequency
 //comment[11]==user_id
 
+
+
+var btn_pdf_result='afdjsalfsdja';
 var student_id;
 var rubric_name;
 var rubric_number; //the question itself
@@ -282,37 +285,34 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	
 
 	//add the comment to the ta-box when the btn_pdf is clicked
-	$('.btn_pdf').unbind("click");
-	$('.btn_pdf').on('click','.taBox',function(obj){
-		console.log("booooooo");
+	$('.btn_pdf').click(function(){
+		//e.stopPropagation();
+		console.log("aaaaabbbbbccccc");
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).html();
-		var this_index_pdf = $(this).parents("div").attr('id').slice(-1)-1;
-
-		//remove blanky stuff
-		var blank_loc = comment.indexOf("<input");
-		var blank_i = 0;
-		while (blank_loc != -1) {
-			comment = comment.replace(/<input.*?>/, $(this).parents("tr").find(".blank").get(blank_i).value);
-			blank_i++;
-			blank_loc = comment.indexOf("<input");
-		}
+		console.log(comment);
   
 		comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
-
+		btn_pdf_result=comment;
 		comment = comment.replace(/\\"/g, '"').replace(/\\'/g, "'");
 
 			//find if the corresponding gradescope name changed
-		  $(".taBox--textarea").val(
-			  $(".taBox--textarea").val() + "\n" + comment + "\n");
-		  $(".taBox--textarea").height($(".taBox--textarea")[0].scrollHeight);
+		  $(".taBox--displayText > span").text(
+			  $(".taBox--displayText > span").text() + "\n" + comment + "\n");
+		$(".taBox--textarea").text(
+			$(".taBox--textarea").text() + "\n" + comment + "\n");
+		  
 		  //console.log("making the insertion");
-	  
-		  // simulate blur so the new comment will save
-		  var event = new KeyboardEvent('keydown');
-		  document.querySelector('.taBox--textarea').dispatchEvent(event);
-
 	});
+	// $('.btn_pdf').on('click','.taBox',function(obj){
+	// 	console.log("booooooo");
+
+	  
+	// 	  // simulate blur so the new comment will save
+	// 	  var event = new KeyboardEvent('keydown');
+	// 	  document.querySelector('.taBox--textarea').dispatchEvent(event);
+
+	// });
 
 
 
@@ -510,7 +510,7 @@ function injectSuggestions() {
 	
 	$(
 		"<div class='category_selection'>"+
-		"<span  id ='ins_check' style='color:red'>If you believe your comment meets the criteria listed below, check them.</span>"+
+		"<span  id ='ins_check' style='color:red'>Check boxes below if you meet the critiria. If you don't want to comment, press 'z' for next question</span>"+
 		"<br/>"+
 		"<input type='checkbox' class='catCheck--spec' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
 		"<input type='checkbox' class='catCheck--act' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
@@ -524,6 +524,8 @@ function injectSuggestions() {
 		$(".actionBar--action-next").attr('disabled',true);
 	});
 
+
+	//trigger word function: if the 
 	$(document).change(function(){
 		comment_text = $('.form--textArea').val();
 		comment_split=comment_text.split(" ");
@@ -540,31 +542,31 @@ function injectSuggestions() {
 		if($('input[class="catCheck--spec"]').is(':checked')){
 			if($('input[class="catCheck--act"]').is(':checked')){
 				if($('input[class="catCheck--just"]').is(':checked')){
-					$('#ins_check').text('good to go!');
+					$('#ins_check').text('Good to go!');
 					$('#ins_check').css('color','green');
 					
 				}else{
 					$('#ins_check').css('color','red');
-					$('#ins_check').text('Your comment is specific and actionable, please justify');
+					$('#ins_check').text('Your comment can be more justified.');
 				}
 			}else if($('input[class="catCheck--just"]').is(':checked')){
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is specific and justified, make it more actionable');
+				$('#ins_check').text('Your comment can be more actionable.');
 			}else{
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is specific, make it actionable and justified');
+				$('#ins_check').text('Your comment could be improved to be more actionable and justified.');
 			}
 		}else if($('input[class="catCheck--act"]').is(':checked')){
 			if($('input[class="catCheck--just"]').is(':checked')){
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is actionable and justified, just be specific');
+				$('#ins_check').text('Your comment is actionable and justified, just be specific.');
 			}else{
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is actionable only, make it better');
+				$('#ins_check').text('Your comment is actionable only, make it better.');
 			}
 		}else if($('input[class="catCheck--just"]').is(':checked')){
 			$('#ins_check').css('color','red');
-			$('#ins_check').text('Your comment is justified only, make it better');
+			$('#ins_check').text('Your comment is justified only, make it better.');
 		}else{
 			$('#ins_check').css('color','red');
 			$('#ins_check').text('If you believe your comment meets the criteria listed below, check them.');
@@ -598,8 +600,18 @@ function injectSuggestions() {
 	});
 
 
+	$(document).ready(function(){
+		$('.btnGroup--btn-flex').append("<span>(page will refresh after add item)</span>");
+	});
 
-//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
+
+
+const pdfTarget = document.getElementsByClassName('taBox-updatable');
+
+
+
+
+	//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
 // Select the node that will be observed for mutations
 const targetNode = document.getElementsByClassName('rubricItem--key');
 console.log(targetNode);
@@ -620,7 +632,7 @@ const callback = function(mutationsList, observer) {
 					rubric_item=$(".rubricItem--key-applied").html()
 			
 					$("<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
-						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf'>" + 
+						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
 							'<div class="suggestion_header">"Suggestions:"</div>' +
 								  "<table class='comments_good comments_table'></table>" +
 						"</div>" + 
@@ -628,6 +640,7 @@ const callback = function(mutationsList, observer) {
 					).insertAfter('.taBox--textarea');
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
 					storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
+					
 				}
 				if(!always_show){
 				var id=$('.rubricItem--key-applied').html();
@@ -715,7 +728,14 @@ observer.observe(targetNode[i], config);
 }
 
 
-
+$(document).change(function(){
+	if($('.taBox-is-editing')){
+		console.log(btn_pdf_result);
+		$('.taBox--textarea').text(
+			$('.taBox--textarea').val()+ "\n" + btn_pdf_result + "\n"
+		);
+	}
+});
 
 
 
@@ -764,17 +784,17 @@ $(function() {
 		 $(".form--textArea").keydown(function() {
 			setTimeout(function(){ 
 				
-				// save current text
+				// save current text, so that the thing will be stored, and this works
 				comment_text = $('.form--textArea').val();
-				// if (original_text != "") {
-				// 	var split = comment_text.split(original_text);
-				// 	console.log("comment split AAA: "+split);
-				// 	if (split.length == 2) {
-				// 		comment_text = split[1];
-				// 	} else {
-				// 		comment_text = split[0];
-				// 	}
-				// }
+				if (original_text != "") {
+					var split = comment_text.split(original_text);
+					console.log("comment split AAA: "+split);
+					if (split.length == 2) {
+						comment_text = split[1];
+					} else {
+						comment_text = split[0];
+					}
+				}
 				console.log("got updated comments: ")
 				console.log(comment_text);
 		

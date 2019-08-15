@@ -94,15 +94,15 @@ a[disabled="disabled"] {
 
 
 .suggestion_container_pdf{
-  position: relative;
-  border: 1px solid black;
+  position: relative !important;
+  border: 1px solid black !important;
 }
 
 .suggestion_box_pdf {
   border: 1px solid #004ea3 !important;
-  height: 200px;
+  height: 200px !important;
   overflow-y: scroll !important;
   background-color: rgba(74,74,74,0.03) !important;
-  position: relative;
+  position: relative !important;
 }
 

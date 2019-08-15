@@ -32,6 +32,11 @@
         "https://www.gradescope.com/courses/*/questions/*/submissions/*/grade","https://www.gradescope.com/courses/*/questions/*/submissions/*/grade?not_grouped=true"],
       "js": ["jquery-2.2.2.min.js", "content_script.js"],
       "css": ["suggestions.css"]
+    },
+    {
+      "matches": ["https://www.gradescope.com/courses/*/assignments/*/submissions/*"],
+      "js": ["jquery-2.2.2.min.js","student_content_script.js"],
+      "css": ["student_view.css"]
     }
   ],
   "background": {
@@ -44,5 +49,5 @@
       "https://spreadsheets.google.com/feeds"
     ]
   },
-  "web_accessible_resources": ["button.png"]
+  "web_accessible_resources": ["button.png","dialog.png"]
 }
