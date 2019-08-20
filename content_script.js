@@ -27,7 +27,7 @@
 
 
 
-var btn_pdf_result='afdjsalfsdja';
+var btn_pdf_result='';
 var student_id;
 var rubric_name;
 var rubric_number; //the question itself
@@ -43,10 +43,10 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // this is specific to A6
 
 //follow the demo, the key is the question itself and the value is the num of rubric items
-var num_rubric_items = {1.1:20,1.2:20,1.3:20,1.4: 20,1.5: 20, 2.1:20,2.2:20, 2.3: 20, 3.1:20, 3.2:20, 3.3:20, 3.4:20, 3.5:20, 4.1:20,
-	4.2: 20, 4.3:20, 4.4:20, 4.5:20, 5.1:20, 5.2:20,5.3:20, 5.4:20, 5.5:20,6.1:20,6.2:20,6.3:20,6.4: 20,6.5: 20,
-	7.1:20,7.2:20,7.3:20,7.4: 20,7.5: 20,
-	 1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20};
+var num_rubric_items = {1.1:7,1.2:7,1.3:7,1.4: 7,1.5: 7, 2.1:7,2.2:7, 2.3: 7, 3.1:7, 3.2:7, 3.3:7, 3.4:7, 3.5:7, 4.1:7,
+	4.2: 7, 4.3:7, 4.4:7, 4.5:7, 5.1:7, 5.2:7,5.3:7, 5.4:7, 5.5:7,6.1:7,6.2:7,6.3:7,6.4: 7,6.5: 7,
+	7.1:7,7.2:7,7.3:7,7.4: 7,7.5: 7, 2.4:7,2.5:7,
+	 1: 7, 2: 7, 3: 7, 4: 7, 5: 7, 6: 7, 7: 7};
 
 $(document).ready(function(){
 	original_text=$('.form--textArea').val();
@@ -154,6 +154,9 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 		return;
 	}
 
+
+
+
 	// sort comments ascending by length
     comments = comments.sort(function(info1, info2) {
       var length1 = parseInt(info1[6]);
@@ -167,6 +170,15 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       }
     });
 
+
+
+	comments= comments.sort(function(info1,info2){
+		var nameA= (info1[5].split(' '))[0].toLowerCase();
+		var nameB = (info2[5].split(' '))[0].toLowerCase();
+		if(nameA === nameB) return 0; 
+    	return nameA > nameB ? 1 : -1;
+
+	});
     //console.log(comments);
 
     // sort comments descending by frequency
@@ -183,13 +195,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	});
 	
 
-	comments= comments.sort(function(info1,info2){
-		var nameA= (info1[5].split(' '))[0].toLowerCase();
-		var nameB = (info2[5].split(' '))[0].toLowerCase();
-		if(nameA === nameB) return 0; 
-    	return nameA > nameB ? 1 : -1;
 
-	});
 
     //A10: put non-0 comments first (ones specific to this rubric question)
     var comments_0 = [];
@@ -282,12 +288,12 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
     	}
     }
 	
-	
+
 
 	//add the comment to the ta-box when the btn_pdf is clicked
 	$('.btn_pdf').click(function(){
 		//e.stopPropagation();
-		console.log("aaaaabbbbbccccc");
+		
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).html();
 		console.log(comment);
@@ -299,13 +305,15 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 			//find if the corresponding gradescope name changed
 		  $(".taBox--displayText > span").text(
 			  $(".taBox--displayText > span").text() + "\n" + comment + "\n");
-		$(".taBox--textarea").text(
-			$(".taBox--textarea").text() + "\n" + comment + "\n");
+		
+		// $(".taBox--textarea").text() + "\n" + comment + "\n";
 		  
 		  //console.log("making the insertion");
 	});
-	// $('.btn_pdf').on('click','.taBox',function(obj){
-	// 	console.log("booooooo");
+
+
+
+
 
 	  
 	// 	  // simulate blur so the new comment will save
@@ -606,7 +614,6 @@ function injectSuggestions() {
 
 
 
-const pdfTarget = document.getElementsByClassName('taBox-updatable');
 
 
 
@@ -672,6 +679,27 @@ observer.observe(targetNode[i], config);
 
 
 
+
+//const config = { attributes: true, childList: true, subtree: true };
+
+const pdfTarget = document.getElementsByClassName('taBox--textarea')[0];
+console.log(pdfTarget)
+
+
+const callback_pdf = function(mutationList,observer_pdf){
+	for(let mutation of mutationList){
+		if(mutation.type==='attributes' && btn_pdf_result!=''){
+			$('.taBox--textarea.focus-ring').val($('.taBox--textarea.focus-ring').val()+ '\n'+btn_pdf_result);
+			btn_pdf_result='';
+		}
+	}
+
+}
+
+
+const observer_pdf = new MutationObserver(callback_pdf);
+
+observer_pdf.observe(pdfTarget,config);
 
 
 
