@@ -49,7 +49,12 @@ function loadSpreadsheet() {
 
       xhr.onload = function (oEvent) {
         arrayBuffer = xhr.response; 
+        console.log(arrayBuffer);
+        if(arrayBuffer.values==null){
+          last_row=2;
+        }else{
         last_row=arrayBuffer.values.length+1;
+        }
         console.log("last row is " + last_row);
     }
 
@@ -178,7 +183,13 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
                   rubric_question + '", "", "' + always_show + 
             '", "" ]]' + 
           '}');
-        }
+        } else if (action == "pdf focus") {
+          xhr2.send('{' + 
+            '"range": "A10!A2:H100000",' + 
+            '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
+                  rubric_question + '", "", "' + always_show + 
+            '", "" ]]' + 
+          '}');
 
       });
 
@@ -226,6 +237,8 @@ function saveNewComment() {
       console.log(comments);
       var rubric_number = items.comments_rubric_number;
       var inserted_comments = items.comments_inserted;
+      var ass_num= items.assignment_num;
+      var sub_num= items.submission_num;
       console.log("inserted commentS:");
       console.log(inserted_comments);
 
@@ -269,7 +282,7 @@ function saveNewComment() {
           // category (h) = 0
           // frequency (i) = 1
           // frequency orig (j) = 1
-          values += '[ "'+parseInt(last_row+1)+'", "' + rubric_number + '", "", "'+store_rubric_item+'","", "' + 
+          values += '[ "'+parseInt(last_row+1)+'", "' + rubric_number + '", "'+ ass_num+'", "'+store_rubric_item+'","'+sub_num+'", "' + 
               comment + '", "' + comment_length + '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
           last_row++;
@@ -388,5 +401,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     on_grading_page = true;
   } else if (request.action == "onOtherPage") {
     on_grading_page = false;
+  }else if (request.action == "logPDFFocus") {
+    updateSheets("pdf focus", request.rubric_question);
+    sendResponse("event logged");
   }
 });

@@ -42,11 +42,23 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
 
+
+
 //follow the demo, the key is the question itself and the value is the num of rubric items
 var num_rubric_items = {1.1:7,1.2:7,1.3:7,1.4: 7,1.5: 7, 2.1:7,2.2:7, 2.3: 7, 3.1:7, 3.2:7, 3.3:7, 3.4:7, 3.5:7, 4.1:7,
 	4.2: 7, 4.3:7, 4.4:7, 4.5:7, 5.1:7, 5.2:7,5.3:7, 5.4:7, 5.5:7,6.1:7,6.2:7,6.3:7,6.4: 7,6.5: 7,
 	7.1:7,7.2:7,7.3:7,7.4: 7,7.5: 7, 2.4:7,2.5:7,
 	 1: 7, 2: 7, 3: 7, 4: 7, 5: 7, 6: 7, 7: 7};
+
+//get the assignment number and submission number
+var attrobj= jQuery.parseJSON($("div[data-react-class]").attr('data-react-props'));
+var ass_number=attrobj['assignment']['id']
+var sub_number=attrobj['assignment_submission']['id'];
+console.log("ass = "+ass_number);
+console.log("sub = "+sub_number)
+
+chrome.storage.local.set({assignment_num:ass_number, submission_num:sub_number});
+
 
 $(document).ready(function(){
 	original_text=$('.form--textArea').val();
@@ -363,10 +375,9 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
 								rubric_item: rubric_item,
-      							comment: comment
+								comment: comment
       						}, function(response) {
 		  console.log(response);
-		  console.log("category RRRR: "+category);
       });      
 
     });
@@ -682,24 +693,24 @@ observer.observe(targetNode[i], config);
 
 //const config = { attributes: true, childList: true, subtree: true };
 
-const pdfTarget = document.getElementsByClassName('taBox--textarea')[0];
-console.log(pdfTarget)
+// const pdfTarget = document.getElementsByClassName('taBox--textarea')[0];
+// console.log(pdfTarget)
 
 
-const callback_pdf = function(mutationList,observer_pdf){
-	for(let mutation of mutationList){
-		if(mutation.type==='attributes' && btn_pdf_result!=''){
-			$('.taBox--textarea.focus-ring').val($('.taBox--textarea.focus-ring').val()+ '\n'+btn_pdf_result);
-			btn_pdf_result='';
-		}
-	}
+// const callback_pdf = function(mutationList,observer_pdf){
+// 	for(let mutation of mutationList){
+// 		if(mutation.type==='attributes' && btn_pdf_result!=''){
+// 			$('.taBox--textarea.focus-ring').val($('.taBox--textarea.focus-ring').val()+ '\n'+btn_pdf_result);
+// 			btn_pdf_result='';
+// 		}
+// 	}
 
-}
+// }
 
 
-const observer_pdf = new MutationObserver(callback_pdf);
+// const observer_pdf = new MutationObserver(callback_pdf);
 
-observer_pdf.observe(pdfTarget,config);
+// observer_pdf.observe(pdfTarget,config);
 
 
 
@@ -723,6 +734,17 @@ observer_pdf.observe(pdfTarget,config);
 		});
 	});
 
+	$("taBox--textArea").focus(function(){
+		var rubric_item=$(".rubricItem--key-applied").html();
+
+		chrome.runtime.sendMessage({action:"logPDFFocus",
+		rubric_question: rubric_name,
+		rubric_item: rubric_item																	
+																		
+	},function(response){
+		console.log("logging pdf event: "+response)
+	});
+	});
 	// see/hide button functionality
 	$(".see_suggestions").click(function() {
 		var selected_id_num = this.id.split("see_suggestions_")[1];
