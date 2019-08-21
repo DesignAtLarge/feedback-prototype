@@ -70,7 +70,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, rubric_question, rubric_item, comment_info, comment) {
+function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
@@ -160,38 +160,37 @@ function updateSheets(action, rubric_question, rubric_item, comment_info, commen
           xhr2.send('{' + 
             '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "comment", "' + comment_info[0] + '", "' + user_id + '", "' + 
-                  rubric_question + '", "' + rubric_item + '", "' + always_show + '", "' + comment + 
-            '" ]]' + 
+                  rubric_question + '", "' + rubric_item + '", "' + always_show + '", "' + comment + '", "'+submission_num+
+                  '","" ]]' + 
           '}');
         } else if (action == "change setting") {
           xhr2.send('{' + 
             '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "change setting", "", "' + user_id + '", "", "", "' + always_show + 
-            '", "" ]]' + 
+            '", "","'+submission_num+'","" ]]' + 
           '}');
         } else if (action == "show suggestions" || action == "hide suggestions" || action == "focus") {
           xhr2.send('{' + 
             '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                  rubric_question + '", "' + rubric_item + '", "' + always_show + 
-            '", "" ]]' + 
+                  rubric_question + '", "' + rubric_item + '", "' + always_show +'", "","'+submission_num+'","" ]]'+
           '}');
         } else if (action == "gradescope focus") {
           xhr2.send('{' + 
             '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                  rubric_question + '", "", "' + always_show + 
-            '", "" ]]' + 
+                  rubric_question + '", "", "' + always_show +'", "","'+submission_num+'","" ]]' + 
           '}');
-        } else if (action == "pdf focus") {
+        }else if (action == "pdf focus") {
           xhr2.send('{' + 
             '"range": "A10!A2:H100000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                  rubric_question + '", "", "' + always_show + 
-            '", "" ]]' + 
+                  rubric_question + '", "", "' + always_show + '", "","'+submission_num+'","" ]]'  + 
           '}');
+        }
+        });
 
-      });
+      
 
 
 
@@ -379,30 +378,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     loadSpreadsheet();
     sendResponse("done");
   } else if (request.action == "logEvent") {
-    updateSheets("comment", request.rubric_question, request.rubric_item, request.comment_info, request.comment);
+    updateSheets("comment", request.submission_num,request.rubric_question, request.rubric_item, request.comment_info, request.comment);
     sendResponse("event logged");
   } else if (request.action == "logShowSetting") {
     updateSheets("change setting");
     sendResponse("event logged");
   } else if (request.action == "logSuggestionSee") {
-    updateSheets("show suggestions", request.rubric_question, request.rubric_item);
+    updateSheets("show suggestions", request.submission_num,request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   } else if (request.action == "logSuggestionHide") {
-    updateSheets("hide suggestions", request.rubric_question, request.rubric_item);
+    updateSheets("hide suggestions", request.submission_num,request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   } else if (request.action == "logFocus") {
   
-    updateSheets("focus", request.rubric_question, request.rubric_item);
+    updateSheets("focus", request.submission_num,request.rubric_question, request.rubric_item);
     sendResponse("event logged");
   } else if (request.action == "logGradescopeFocus") {
-    updateSheets("gradescope focus", request.rubric_question);
+    updateSheets("gradescope focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
   } else if (request.action == "onGradingPage") {
     on_grading_page = true;
   } else if (request.action == "onOtherPage") {
     on_grading_page = false;
   }else if (request.action == "logPDFFocus") {
-    updateSheets("pdf focus", request.rubric_question);
+    updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
   }
 });

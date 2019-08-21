@@ -16,10 +16,10 @@
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
 //comment[0]==id(row number in google sheet)
-
 //comment[1]==rubric_number
+//comment[2]==assignment_number
 //comment[3]==rubric_item
-//comment[4]==comment_id
+//comment[4]==submission_number
 //comment[5]==comment text itself
 //comment[6]==length of comment text(string)
 //comment[8]==frequency
@@ -54,9 +54,10 @@ var num_rubric_items = {1.1:7,1.2:7,1.3:7,1.4: 7,1.5: 7, 2.1:7,2.2:7, 2.3: 7, 3.
 var attrobj= jQuery.parseJSON($("div[data-react-class]").attr('data-react-props'));
 var ass_number=attrobj['assignment']['id']
 var sub_number=attrobj['assignment_submission']['id'];
-console.log("ass = "+ass_number);
-console.log("sub = "+sub_number)
+console.log(attrobj);
 
+//grader name to be stored as the username in the end
+var grader_name=attrobj['evaluation']['file_comment_user_name'];
 chrome.storage.local.set({assignment_num:ass_number, submission_num:sub_number});
 
 
@@ -375,7 +376,8 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
       							rubric_question: rubric_name,
 								rubric_item: rubric_item,
-								comment: comment
+								comment: comment,
+								submission_num: sub_number
       						}, function(response) {
 		  console.log(response);
       });      
@@ -727,22 +729,23 @@ observer.observe(targetNode[i], config);
 		// tell chrome to log the event that we just clicked the comment box
 		chrome.runtime.sendMessage({action: "logFocus",
 									rubric_question: rubric_name,
-									rubric_item: rubric_item
+									rubric_item: rubric_item,
+									submission_num:sub_number
 			}, function(response) {
 				console.log("logging focus: " + response);
 				//console.log("RRRRRRRRR "+rubric_item);
 		});
 	});
 
-	$("taBox--textArea").focus(function(){
+	$("taBox--textarea").focus(function(){
 		var rubric_item=$(".rubricItem--key-applied").html();
 
 		chrome.runtime.sendMessage({action:"logPDFFocus",
 		rubric_question: rubric_name,
-		rubric_item: rubric_item																	
-																		
+		rubric_item: rubric_item,																	
+		submission_num: sub_number															
 	},function(response){
-		console.log("logging pdf event: "+response)
+		console.log("logging pdf event: "+response);
 	});
 	});
 	// see/hide button functionality
@@ -756,7 +759,8 @@ observer.observe(targetNode[i], config);
 		// tell chrome to log the event that we just clicked see/hide
 		chrome.runtime.sendMessage({action: "logSuggestion" + action,
 									rubric_question: rubric_name,
-									rubric_item: rubric_item
+									rubric_item: rubric_item,
+									submission_num: sub_number
 			}, function(response) {
 				console.log("logging suggestion " + action + ": " + response);
 		});
@@ -780,10 +784,16 @@ observer.observe(targetNode[i], config);
 
 $(document).change(function(){
 	if($('.taBox-is-editing')){
-		console.log(btn_pdf_result);
-		$('.taBox--textarea').text(
-			$('.taBox--textarea').val()+ "\n" + btn_pdf_result + "\n"
-		);
+		var rubric_item=$(".rubricItem--key-applied").html();
+
+		chrome.runtime.sendMessage({action:"logPDFFocus",
+		rubric_question: rubric_name,
+		rubric_item: rubric_item,																	
+		submission_num:sub_number																
+	},function(response){
+		console.log("logging pdf event: "+response);
+	});	
+
 	}
 });
 
@@ -858,6 +868,7 @@ $(function() {
 			// tell chrome to log the event that we just clicked the comment box
 			chrome.runtime.sendMessage({action: "logGradescopeFocus",
 										rubric_question: rubric_name,
+										submission_num:sub_number
 				}, function(response) {
 					console.log("logging gradescope focus: " + response);
 			});
