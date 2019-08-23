@@ -265,7 +265,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  }else{
 		var string = "<tr"  + 
         " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
-        	"<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
+        	// "<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
@@ -654,13 +654,15 @@ const callback = function(mutationsList, observer) {
 				if($('.taBox--textarea')[0]){
 					rubric_item=$(".rubricItem--key-applied").html()
 			
-					$("<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
+					$('.pageViewerControls.u-pointerEventsNone').append($(
+						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
+						"<div id='mydivheader'>DRAG PDF</div>"+
 						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
 							'<div class="suggestion_header">"Suggestions:"</div>' +
 								  "<table class='comments_good comments_table'></table>" +
 						"</div>" + 
 					"</div>"
-					).insertAfter('.taBox--textarea');
+					));
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
 					storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
 					
@@ -935,8 +937,10 @@ $(function() {
 
 	} 
 	$(window).on('beforeunload', function(){
+		console.log("LEAVING");
 		chrome.runtime.sendMessage({action: "onOtherPage",
 	tbox_num:$('.taBox--textarea').length,
+	rubric_question:rubric_name,
 	rubric_item:rubric_item_applied,
 	comment: $('.form--textArea').val(),
 	submission_num:sub_number		
@@ -948,4 +952,49 @@ $(function() {
 	// 	chrome.runtime.sendMessage({action: "onOtherPage"});
 	// }
 });
+
+
+//implement the dragble function of the div
+dragElement(document.getElementById("mydiv"));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV: 
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 

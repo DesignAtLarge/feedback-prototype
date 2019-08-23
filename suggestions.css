@@ -94,8 +94,17 @@ a[disabled="disabled"] {
 
 
 .suggestion_container_pdf{
-  position: relative !important;
+  position: absolute;
+  z-index: 9;
   border: 1px solid black !important;
+}
+
+#mydivheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #2196F3;
+  color: #fff;
 }
 
 .suggestion_box_pdf {

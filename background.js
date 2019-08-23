@@ -407,7 +407,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     on_grading_page = true;
   } else if (request.action == "onOtherPage") {
     on_grading_page = false;
-    updateSheets("pdf focus", request.submission_num,request.rubric_question,request.rubric_question,undefined,request.comment,request.tbox_num);
+    console.log("ADSASDSA");
+    updateSheets("onOtherPage", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
