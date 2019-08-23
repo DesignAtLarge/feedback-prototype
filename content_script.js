@@ -29,9 +29,10 @@
 
 var btn_pdf_result='';
 var student_id;
-var rubric_name;
+var rubric_name;//question itself
 var rubric_number; //the question itself
 var user_id;
+var rubric_item_applied;
 var button_url;
 var full_comments;
 var always_show;
@@ -367,6 +368,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 	  //var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 	  var rubric_item=$(".rubricItem--key-applied").html();
+	  rubric_item_applied=rubric_item;
 	  console.log("inserting comment: " + comment);
       console.log(full_sorted_comments[this_index]);
       console.log(full_sorted_comments[this_index][btn_id_num]);
@@ -387,6 +389,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 }
 
 function updateCommentViews(view_id) {
+
 	console.log('view_id is '+view_id);
 	setTimeout(function(){ 
 		$(".comment_view_text").each(function(ind) {
@@ -410,7 +413,7 @@ function updateCommentViews(view_id) {
 		console.log(comment_text);
 
 		chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
-			comments_rubric_number: rubric_number, saved: false});
+			comments_rubric_number: rubric_number, saved: false,rubric_item:rubric_item_applied});
 	}, 100);
 	
 }
@@ -726,6 +729,7 @@ observer.observe(targetNode[i], config);
 		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
 		//first step to make the ONLY comment box available
 		var rubric_item=$(".rubricItem--key-applied").html();
+		rubric_item_applied=rubric_item;
 		// tell chrome to log the event that we just clicked the comment box
 		chrome.runtime.sendMessage({action: "logFocus",
 									rubric_question: rubric_name,
@@ -828,13 +832,13 @@ $(function() {
 		
 	});
 	// change true so that it only works on grading pages
-	if (true) {
+	if (window.location.pathname.indexOf('grade')>=0) {
 
 		// tell chrome we are on a grading page
 		chrome.runtime.sendMessage({action: "onGradingPage"});
 
 		button_url = chrome.extension.getURL("button.png");
-
+		rubric_item_applied=$('.rubricItem--key-applied').html();
 		// get text currently in comment box
 		//original_text = $(".form--textArea").val();
 		console.log("original text:");
@@ -859,7 +863,7 @@ $(function() {
 				console.log(comment_text);
 		
 				chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
-					comments_rubric_number: rubric_number, saved: false});
+					comments_rubric_number: rubric_number, saved: false,rubric_item:rubric_item_applied});
 			}, 100);
 
 		 });
@@ -929,9 +933,19 @@ $(function() {
 			injectSuggestions();
 		});
 
-	} else {
-		// tell chrome we are NOT on a grading page
-		chrome.runtime.sendMessage({action: "onOtherPage"});
-	}
+	} 
+	$(window).on('beforeunload', function(){
+		chrome.runtime.sendMessage({action: "onOtherPage",
+	tbox_num:$('.taBox--textarea').length,
+	rubric_item:rubric_item_applied,
+	comment: $('.form--textArea').val(),
+	submission_num:sub_number		
+	});
+
+  });
+	// else {
+	// 	// tell chrome we are NOT on a grading page
+	// 	chrome.runtime.sendMessage({action: "onOtherPage"});
+	// }
 });
 

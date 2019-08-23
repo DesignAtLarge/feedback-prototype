@@ -70,7 +70,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment) {
+function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
@@ -187,6 +187,12 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "", "' + always_show + '", "","'+submission_num+'","" ]]'  + 
           '}');
+        }else if(action=="onOtherPage"){
+          xhr2.send('{' + 
+          '"range": "A10!A2:H100000",' + 
+          '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
+                rubric_question + '", "", "' + always_show + '", "","'+submission_num+  '", "'+tbox_num+'","" ]]'  + 
+        '}');
         }
         });
 
@@ -238,6 +244,7 @@ function saveNewComment() {
       var inserted_comments = items.comments_inserted;
       var ass_num= items.assignment_num;
       var sub_num= items.submission_num;
+      var rubric_item=items.rubric_item;
       console.log("inserted commentS:");
       console.log(inserted_comments);
 
@@ -281,7 +288,7 @@ function saveNewComment() {
           // category (h) = 0
           // frequency (i) = 1
           // frequency orig (j) = 1
-          values += '[ "'+parseInt(last_row+1)+'", "' + rubric_number + '", "'+ ass_num+'", "'+store_rubric_item+'","'+sub_num+'", "' + 
+          values += '[ "'+parseInt(last_row+1)+'", "' + rubric_number + '", "'+ ass_num+'", "'+rubric_item+'","'+sub_num+'", "' + 
               comment + '", "' + comment_length + '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
           last_row++;
@@ -292,7 +299,7 @@ function saveNewComment() {
       //    be sure to include original comment id
       for (var comment_id in inserted_comments) {
         if (inserted_comments[comment_id] != "") {
-          values += '[ "", "' + rubric_number + '", "", "'+store_rubric_item+","+ comment_id + '", "' + 
+          values += '[ "", "' + rubric_number + '", "", "'+rubric_item+","+ comment_id + '", "' + 
               inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].split(" ").length + 
               '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
@@ -400,6 +407,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     on_grading_page = true;
   } else if (request.action == "onOtherPage") {
     on_grading_page = false;
+    updateSheets("pdf focus", request.submission_num,request.rubric_question,request.rubric_question,undefined,request.comment,request.tbox_num);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
