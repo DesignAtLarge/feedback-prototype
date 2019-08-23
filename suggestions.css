@@ -111,7 +111,7 @@ a[disabled="disabled"] {
   border: 1px solid #004ea3 !important;
   height: 200px !important;
   overflow-y: scroll !important;
-  background-color: rgba(74,74,74,0.03) !important;
+  background-color: rgb(248, 248, 245) !important;
   position: relative !important;
 }
 

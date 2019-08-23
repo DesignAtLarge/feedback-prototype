@@ -651,12 +651,11 @@ const callback = function(mutationsList, observer) {
         else if (mutation.type === 'attributes') {
 			var classList = mutation.target.className;
 			if(classList.indexOf("rubricItem--key-applied")>=0){
-				if($('.taBox--textarea')[0]){
 					rubric_item=$(".rubricItem--key-applied").html()
 			
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
-						"<div id='mydivheader'>DRAG PDF</div>"+
+						"<div id='mydivheader'>DRAG PDF TO ME</div>"+
 						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
 							'<div class="suggestion_header">"Suggestions:"</div>' +
 								  "<table class='comments_good comments_table'></table>" +
@@ -666,7 +665,6 @@ const callback = function(mutationsList, observer) {
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
 					storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
 					
-				}
 				if(!always_show){
 				var id=$('.rubricItem--key-applied').html();
 				console.log("IIID is: "+id);
