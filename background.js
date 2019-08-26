@@ -70,7 +70,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num) {
+function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num,assignment_name) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
@@ -187,11 +187,11 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "", "' + always_show + '", "","'+submission_num+'","" ]]'  + 
           '}');
-        }else if(action=="onOtherPage"){
+        }else if(action=="onLeaving"){
           xhr2.send('{' + 
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                rubric_question + '", "", "' + always_show + '", "","'+submission_num+  '", "'+tbox_num+'","" ]]'  + 
+                rubric_question + '", "", "' + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'","" ]]'  + 
         '}');
         }
         });
@@ -405,10 +405,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     sendResponse("event logged");
   } else if (request.action == "onGradingPage") {
     on_grading_page = true;
-  } else if (request.action == "onOtherPage") {
-    on_grading_page = false;
-    console.log("ADSASDSA");
-    updateSheets("onOtherPage", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num);
+  } else if (request.action == "onLeaving") {
+    //NOTICE: SINCE WE ARE ALWAYS USING GRADING PAGE, ongrading is useless
+    //on_grading_page = false;
+    updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
