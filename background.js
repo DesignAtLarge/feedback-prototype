@@ -279,7 +279,7 @@ function saveNewComment() {
           }
           if (already_there) continue;
 
-          var comment_length = comment.split(" ").length;
+          var comment_length = comment.length;
           // rubric question number (b) = items.rubric_number
           // if comment = one of the inserted comments, original id (e) = that inserted comment's id
           //    then remove that comment from inserted comments
@@ -300,7 +300,7 @@ function saveNewComment() {
       for (var comment_id in inserted_comments) {
         if (inserted_comments[comment_id] != "") {
           values += '[ "", "' + rubric_number + '", "", "'+rubric_item+","+ comment_id + '", "' + 
-              inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].split(" ").length + 
+              inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].length + 
               '", "1", "1", "1", "", "' + user_id + '"' + 
             ' ],'
         }
@@ -347,6 +347,69 @@ function appendCommentsToSheet(values) {
     }
   });
 }
+
+
+
+function appendComments_pdf(pdf_list,rubric_question,rubric_item,submission_num,assignment_name,grader_name){
+  console.log("do the append for the list from pdf");
+  console.log(pdf_list);
+  var values='"values": [';
+  for(var i=0;i<pdf_list.length;i++){
+    var comment = pdf_list[i];
+    // ignore empty lines
+    if (comment != "") {
+      // delete -'s at the start of lines
+      if (comment[0] == "-") {
+        if (comment[1] == " ") {
+          comment = comment.substr(2);
+        } else {
+          comment = comment.substr(1);
+        }
+      }
+      console.log("comment:")
+      console.log(comment);
+      var comment_length = comment.length;
+      values += '[ "'+parseInt(last_row+1)+'", "' + rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
+      comment + '", "' + comment_length + '", "1", "1", "1", "true", "' + grader_name + '"' + 
+    ' ],'
+  last_row++;
+
+  }
+}
+values = values.slice(0, values.length-1) + ']';
+if (values != '"values": ]') {
+  chrome.identity.getAuthToken({interactive: true}, function(token) {
+    if (token) {
+      console.log("got the token");
+      // use that access token to set an http header when calling the Drive API.
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+            // request done, we sent the data 
+            console.log("Added new comments")
+        } else if (xhr.readyState === XMLHttpRequest.DONE) {
+          console.log(xhr.responseText);
+        }
+      };
+
+      xhr.open("POST", 
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
+          "/values/W16-A10!A2:L10000:append?valueInputOption=RAW",
+        true);
+      xhr.setRequestHeader('Authorization','Bearer ' + token);
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.send('{' + 
+        '"range": "W16-A10!A2:L10000",' + 
+        values + 
+      '}');
+    }
+  });
+}
+
+}
+
+
+
 
 // keyboard shortcut to modify always show setting
 chrome.commands.onCommand.addListener(function(command) {
@@ -411,6 +474,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
+    sendResponse("event logged");
+  }else if(request.action=="sendPDFbox"){
+    appendComments_pdf(request.pdf_list,request.rubric_question,request.rubric_item,request.submission_num,request.assignment_name,request.grader_name);
     sendResponse("event logged");
   }
 });

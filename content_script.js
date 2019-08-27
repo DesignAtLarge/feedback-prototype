@@ -16,7 +16,7 @@
 //note before start: refer to background.js for why there
 //are comment[0,1,2,blabla]
 //comment[0]==id(row number in google sheet)
-//comment[1]==rubric_number
+//comment[1]==rubric question number
 //comment[2]==assignment_number
 //comment[3]==rubric_item
 //comment[4]==submission_number
@@ -45,6 +45,24 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 
 
 
+//console.log($('.taBox--textarea'));
+
+if(window.location.pathname.indexOf('assignments')>=0){
+	console.log("in batch page");
+	url_set= new Set();
+	var i=0;
+	let list= $("a[class='link-noUnderline']");
+	while(i<list.length){
+		url_set.add(list[i].href);
+		i++;
+	}
+	var url_list=Array.from(url_set);
+	console.log(url_list);
+	chrome.storage.local.set({url_list:url_list});
+}
+
+
+
 //follow the demo, the key is the question itself and the value is the num of rubric items
 var num_rubric_items = {1.1:7,1.2:7,1.3:7,1.4: 7,1.5: 7, 2.1:7,2.2:7, 2.3: 7, 3.1:7, 3.2:7, 3.3:7, 3.4:7, 3.5:7, 4.1:7,
 	4.2: 7, 4.3:7, 4.4:7, 4.5:7, 5.1:7, 5.2:7,5.3:7, 5.4:7, 5.5:7,6.1:7,6.2:7,6.3:7,6.4: 7,6.5: 7,
@@ -59,7 +77,8 @@ var sub_number=attrobj['assignment_submission']['id'];
 console.log(attrobj);
 
 //grader name to be stored as the username in the end
-var grader_name=attrobj['evaluation']['file_comment_user_name'];
+var grader_name=attrobj['file_comment_user_name'];
+console.log(grader_name);
 chrome.storage.local.set({assignment_num:ass_number, submission_num:sub_number});
 
 
@@ -547,6 +566,23 @@ function injectSuggestions() {
 	//disable the nextQuestion button until all checkbox clicked
 	$(document).ready(function(){
 		$(".actionBar--action-next").attr('disabled',true);
+		let cur_url= window.location.href
+		chrome.storage.local.get(null, function(items){
+		url_list= items.url_list;
+		console.log(url_list.length);
+		url_list.forEach(function(element){
+			if(cur_url.indexOf(element)>-1){
+				url_list=url_list.filter(function(a){return a!==element;});
+			}
+		});
+		console.log(url_list.length);
+		chrome.storage.local.set({url_list:url_list});
+			if((url_list).length>0){
+				console.log($(".actionBar--action-next")[0].href);
+				$(".actionBar--action-next")[0].href=url_list[Math.floor(Math.random() * url_list.length)];
+				console.log($(".actionBar--action-next")[0].href);
+			}
+		})
 	});
 
 
@@ -833,7 +869,7 @@ $(function() {
 		
 	});
 	// change true so that it only works on grading pages
-	if (window.location.pathname.indexOf('grade')>=0) {
+	if (window.location.pathname.indexOf('grade')>=0 && window.location.pathname.indexOf('assignments')==-1) {
 
 		// tell chrome we are on a grading page
 		chrome.runtime.sendMessage({action: "onGradingPage"});
@@ -940,12 +976,37 @@ $(function() {
 		chrome.runtime.sendMessage({action: "onLeaving",
 	tbox_num:$('.taBox--textarea').length,
 	rubric_question:rubric_name,
-	rubric_item:rubric_item_applied,
+	rubric_item:$(".rubricItem--key-applied").html(),
 	comment: $('.form--textArea').val(),
 	submission_num:sub_number,
 	assignment_name: ass_name
 	});
+		console.log("SEND PDF COMMENTS");
+	
+//console.log($('.taBox--textarea')[0].innerHTML);
+		var i=0;
+		if($('.taBox--textarea').length>0){
+		var pdf_text_list=[]
+		while(i<$('.taBox--textarea').length){
+			pdf_text_list.push($('.taBox--textarea')[i].innerHTML)
+			i++;
+		}
+		
+		console.log(pdf_text_list)
+		chrome.runtime.sendMessage({action:"sendPDFbox",
+		pdf_list: pdf_text_list,
+		rubric_question:rubric_number,
+		rubric_item:$(".rubricItem--key-applied").html(),
+		submission_num:sub_number,
+		assignment_name: ass_number,
+		grader_name:grader_name
 
+	},function(response) {
+		console.log("logging focus: " + response);
+		//console.log("RRRRRRRRR "+rubric_item);
+});
+	
+}
   });
 	// else {
 	// 	// tell chrome we are NOT on a grading page
