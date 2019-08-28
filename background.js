@@ -386,7 +386,7 @@ if (values != '"values": ]') {
       xhr.onreadystatechange = function () {
         if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
             // request done, we sent the data 
-            console.log("Added new comments")
+            console.log("Added new comments from PDF")
         } else if (xhr.readyState === XMLHttpRequest.DONE) {
           console.log(xhr.responseText);
         }
@@ -408,6 +408,43 @@ if (values != '"values": ]') {
 
 }
 
+
+function appendStuentSubmission(sub_number,student_name_list){
+  var res_string;
+  if(student_name_list.length==1){
+    res_string=student_name_list[0];
+  }else{
+    res_string=student_name_list.join();
+  }
+  console.log(res_string);
+  value=
+  chrome.identity.getAuthToken({interactive: true}, function(token) {
+    if (token) {
+      console.log("got the token");
+      // use that access token to set an http header when calling the Drive API.
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200) {
+            // request done, we sent the data 
+            console.log("Added new comments from PDF")
+        } else if (xhr.readyState === XMLHttpRequest.DONE) {
+          console.log(xhr.responseText);
+        }
+      };
+
+      xhr.open("POST", 
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
+          "/values/submission!A2:L10000:append?valueInputOption=RAW",
+        true);
+      xhr.setRequestHeader('Authorization','Bearer ' + token);
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.send('{' + 
+        '"range": "submission!A2:L10000",' + 
+        '"values": [[ "' + sub_number + '", "' + res_string+'","" ]]'  + 
+'}');
+    }
+  });
+}
 
 
 
@@ -477,6 +514,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     sendResponse("event logged");
   }else if(request.action=="sendPDFbox"){
     appendComments_pdf(request.pdf_list,request.rubric_question,request.rubric_item,request.submission_num,request.assignment_name,request.grader_name);
+    sendResponse("event logged");
+  }else if(request.action=="sendStudentSubmission"){
+    appendStuentSubmission(request.sub_number,request.student_name_list);
     sendResponse("event logged");
   }
 });

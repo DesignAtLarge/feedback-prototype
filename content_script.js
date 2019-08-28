@@ -82,6 +82,24 @@ console.log(grader_name);
 chrome.storage.local.set({assignment_num:ass_number, submission_num:sub_number});
 
 
+
+$(document).ready(function(){
+	var student_name= $("abbr[role=button]").attr('aria-label');
+	student_name=student_name.replace("and ","");
+	
+	student_name_list= student_name.split(",");
+	for(var i=0;i<student_name_list.length;i++){
+		student_name_list[i]=student_name_list[i].trim();
+	}
+	console.log(student_name_list)
+	chrome.runtime.sendMessage({action:"sendStudentSubmission",
+	sub_number:sub_number,
+	student_name_list: student_name_list
+	});
+});
+
+
+
 $(document).ready(function(){
 	original_text=$('.form--textArea').val();
 });
@@ -285,7 +303,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  }else{
 		var string = "<tr"  + 
         " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
-        	// "<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
+        	 "<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
@@ -330,11 +348,15 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 		
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).html();
+		comment.select(); 
+  		comment.setSelectionRange(0, 99999); 
 		console.log(comment);
-  
-		comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
-		btn_pdf_result=comment;
-		comment = comment.replace(/\\"/g, '"').replace(/\\'/g, "'");
+		
+		document.execCommand("copy");
+
+		/* Alert the copied text */
+		alert("Copied the text: " + comment.value);
+
 
 			//find if the corresponding gradescope name changed
 		  $(".taBox--displayText > span").text(
