@@ -27,7 +27,6 @@
 
 
 
-var btn_pdf_result='';
 var student_id;
 var rubric_name;//question itself
 var rubric_number; //the question itself
@@ -303,7 +302,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  }else{
 		var string = "<tr"  + 
         " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
-        	 "<td><img class='btn_pdf " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
@@ -343,29 +341,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 
 	//add the comment to the ta-box when the btn_pdf is clicked
-	$('.btn_pdf').click(function(){
-		//e.stopPropagation();
-		
-		var btn_id_num = $(this).attr("class").split(" ")[1];
-		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).html();
-		comment.select(); 
-  		comment.setSelectionRange(0, 99999); 
-		console.log(comment);
-		
-		document.execCommand("copy");
-
-		/* Alert the copied text */
-		alert("Copied the text: " + comment.value);
-
-
-			//find if the corresponding gradescope name changed
-		  $(".taBox--displayText > span").text(
-			  $(".taBox--displayText > span").text() + "\n" + comment + "\n");
-		
-		// $(".taBox--textarea").text() + "\n" + comment + "\n";
-		  
-		  //console.log("making the insertion");
-	});
 
 
 
@@ -709,7 +684,7 @@ const callback = function(mutationsList, observer) {
         }
         else if (mutation.type === 'attributes') {
 			var classList = mutation.target.className;
-			if(classList.indexOf("rubricItem--key-applied")>=0){
+			if(classList.indexOf("rubricItem--key-applied")>0){
 					rubric_item=$(".rubricItem--key-applied").html()
 			
 					$('.pageViewerControls.u-pointerEventsNone').append($(
@@ -753,29 +728,23 @@ observer.observe(targetNode[i], config);
 }
 
 
-
-
-//const config = { attributes: true, childList: true, subtree: true };
-
-// const pdfTarget = document.getElementsByClassName('taBox--textarea')[0];
-// console.log(pdfTarget)
-
-
-// const callback_pdf = function(mutationList,observer_pdf){
-// 	for(let mutation of mutationList){
-// 		if(mutation.type==='attributes' && btn_pdf_result!=''){
-// 			$('.taBox--textarea.focus-ring').val($('.taBox--textarea.focus-ring').val()+ '\n'+btn_pdf_result);
-// 			btn_pdf_result='';
-// 		}
-// 	}
-
-// }
-
-
-// const observer_pdf = new MutationObserver(callback_pdf);
-
-// observer_pdf.observe(pdfTarget,config);
-
+$(document).ready(function(){
+	if($("rubric-Item--key-applied").length>0){
+		rubric_item=$(".rubricItem--key-applied").html()
+			
+		$('.pageViewerControls.u-pointerEventsNone').append($(
+			"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
+			"<div id='mydivheader'>DRAG PDF TO ME</div>"+
+			"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
+				'<div class="suggestion_header">"Suggestions:"</div>' +
+					  "<table class='comments_good comments_table'></table>" +
+			"</div>" + 
+		"</div>"
+		));
+		//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
+		storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
+	}
+});
 
 
 	// $(".comment_view_text").keydown(function() { 
