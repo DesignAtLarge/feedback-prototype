@@ -70,13 +70,18 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num,assignment_name) {
+function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num,assignment_name,grader_name,check_box_status) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
   console.log("updating sheets now... for question "+rubric_question+"for item "+rubric_item);
   console.log("comment_info is "+comment_info);
   // a comment was just inserted, update the google sheets to keep count & log this
+  
+  if(action=="onLeaving"){
+    user_id=grader_name;
+  }
+  
   chrome.identity.getAuthToken({interactive: true}, function(token) {
     if (token) {
       console.log("got the token");
@@ -117,7 +122,9 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
       // send event log to event log sheet
 
       chrome.storage.local.get(null, function(items) {
-        if (!items.user_id) {
+
+        if (!items.user_id && user_id==undefined) {
+          
           user_id = Math.random().toString(36) + new Date().getTime();
           always_show = (Math.random() < 0.5);
           console.log("always show setting: " + always_show);
@@ -191,7 +198,8 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           xhr2.send('{' + 
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                rubric_question + '", "", "' + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'","" ]]'  + 
+                rubric_question + '", "", "' + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
+                +check_box_status+'","" ]]'  + 
         '}');
         }
         });
@@ -508,7 +516,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.action == "onLeaving") {
     //NOTICE: SINCE WE ARE ALWAYS USING GRADING PAGE, ongrading is useless
     //on_grading_page = false;
-    updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name);
+    updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name,request.grader_name,request.check_box_status);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");

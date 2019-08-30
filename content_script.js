@@ -23,6 +23,7 @@
 //comment[5]==comment text itself
 //comment[6]==length of comment text(string)
 //comment[8]==frequency
+//comment[10]== if the comment is from PDF textbox
 //comment[11]==user_id
 
 
@@ -405,6 +406,10 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 }
 
+
+
+
+
 function updateCommentViews(view_id) {
 
 	console.log('view_id is '+view_id);
@@ -553,9 +558,9 @@ function injectSuggestions() {
 		"<div class='category_selection'>"+
 		"<span  id ='ins_check' style='color:red'>Check boxes below if you meet the critiria. If you don't want to comment, press 'z' for next question</span>"+
 		"<br/>"+
-		"<input type='checkbox' class='catCheck--spec' name='category' value='checkbox' style='height:10px; width:10px;'>Is specific"+
-		"<input type='checkbox' class='catCheck--act' name='category' value='checkbox' style='height:10px; width:10px;'>Is actionable"+
-		"<input type='checkbox' class='catCheck--just' name='category' value='checkbox' style='height:10px; width:10px;'>Is justified"+
+		"<input type='checkbox' class='catCheck--spec' name='category' value='is_specific' style='height:10px; width:10px;'>Is specific"+
+		"<input type='checkbox' class='catCheck--act' name='category' value='is_actionable' style='height:10px; width:10px;'>Is actionable"+
+		"<input type='checkbox' class='catCheck--just' name='category' value='is_justified' style='height:10px; width:10px;'>Is justified"+
 		"</div>"
 	).insertAfter(".form--textArea");
 
@@ -943,7 +948,8 @@ $(function() {
 		// get user id and settings
 		chrome.storage.local.get(null, function(items) {
 			if (!items.user_id) {
-				user_id = Math.random().toString(36) + new Date().getTime();
+				user_id = grader_name
+				// Math.random().toString(36) + new Date().getTime();
 				always_show = (Math.random() < 0.5);
 				console.log("always show setting: " + always_show);
 				chrome.storage.local.set({user_id: user_id, always_show: always_show});
@@ -964,13 +970,26 @@ $(function() {
 	} 
 	$(window).on('beforeunload', function(){
 		console.log("LEAVING");
+		if($('input[name="category"]:checked').length==0){
+			var checked="";
+		}
+		else{
+			temp=[]
+			for(var i=0;i<$('input[name="category"]:checked').length;i++){
+			var name=$('input[name="category"]:checked')[i].value
+			temp.push(name)
+		}
+		checked=temp.join();
+	}
 		chrome.runtime.sendMessage({action: "onLeaving",
 	tbox_num:$('.taBox--textarea').length,
 	rubric_question:rubric_name,
 	rubric_item:$(".rubricItem--key-applied").html(),
 	comment: $('.form--textArea').val(),
 	submission_num:sub_number,
-	assignment_name: ass_name
+	assignment_name: ass_name,
+	grader_name:grader_name,
+	check_box_status:checked
 	});
 		console.log("SEND PDF COMMENTS");
 	
@@ -1006,47 +1025,4 @@ $(function() {
 });
 
 
-//implement the dragble function of the div
-// dragElement(document.getElementById("mydiv"));
-
-// function dragElement(elmnt) {
-//   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-//   if (document.getElementById(elmnt.id + "header")) {
-//     // if present, the header is where you move the DIV from:
-//     document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-//   } else {
-//     // otherwise, move the DIV from anywhere inside the DIV: 
-//     elmnt.onmousedown = dragMouseDown;
-//   }
-
-//   function dragMouseDown(e) {
-//     e = e || window.event;
-//     e.preventDefault();
-//     // get the mouse cursor position at startup:
-//     pos3 = e.clientX;
-//     pos4 = e.clientY;
-//     document.onmouseup = closeDragElement;
-//     // call a function whenever the cursor moves:
-//     document.onmousemove = elementDrag;
-//   }
-
-//   function elementDrag(e) {
-//     e = e || window.event;
-//     e.preventDefault();
-//     // calculate the new cursor position:
-//     pos1 = pos3 - e.clientX;
-//     pos2 = pos4 - e.clientY;
-//     pos3 = e.clientX;
-//     pos4 = e.clientY;
-//     // set the element's new position:
-//     elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-//     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-//   }
-
-//   function closeDragElement() {
-//     // stop moving when mouse button is released:
-//     document.onmouseup = null;
-//     document.onmousemove = null;
-//   }
-// }
 
