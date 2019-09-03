@@ -366,9 +366,9 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 			// index of this rubric item = index of these comments in full_sorted_comments
 			//* find the gradescope correspondence here***
-			var this_index = $(this).parents("div").find(".search_text").attr('id').slice(-1)-1;
+			var this_index = $(this).parents("div").attr('id').slice(-1)-1;
       console.log(this_index);
-
+	   console.log(full_sorted_comments)
 	  var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
 	  
       //console.log(comment);
