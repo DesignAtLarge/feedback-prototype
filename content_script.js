@@ -296,13 +296,13 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  }
 	  if(!PDF){
       var string = "<tr"  + 
-        " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
+	  " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
         	"<td><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }else{
 		var string = "<tr"  + 
-        " class='comment' style='color: rgb(" + shade + ", " + shade + ", " + shade + ")'>" + 
+        " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
@@ -368,7 +368,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 			//* find the gradescope correspondence here***
 			var this_index = $(this).parents("div").attr('id').slice(-1)-1;
       console.log(this_index);
-	   console.log(full_sorted_comments)
 	  var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
 	  
       //console.log(comment);
@@ -733,23 +732,7 @@ observer.observe(targetNode[i], config);
 }
 
 
-$(document).ready(function(){
-	if($("rubric-Item--key-applied").length>0){
-		rubric_item=$(".rubricItem--key-applied").html()
-			
-		$('.pageViewerControls.u-pointerEventsNone').append($(
-			"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
-			"<div id='mydivheader'>DRAG PDF TO ME</div>"+
-			"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
-				'<div class="suggestion_header">"Suggestions:"</div>' +
-					  "<table class='comments_good comments_table'></table>" +
-			"</div>" + 
-		"</div>"
-		));
-		//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
-		storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
-	}
-});
+
 
 
 	// $(".comment_view_text").keydown(function() { 
@@ -1025,4 +1008,8 @@ $(function() {
 });
 
 
+
+function shortenComment(comment){
+	//Find the string length
+}
 

@@ -39,7 +39,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!A2:K10000",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/comments_unique!A2:K10000",
         true);
 
       xhr.setRequestHeader('Authorization','Bearer ' + token);
@@ -124,7 +124,7 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
       chrome.storage.local.get(null, function(items) {
 
         if (!items.user_id && user_id==undefined) {
-          
+          console.log("undefied user id");
           user_id = Math.random().toString(36) + new Date().getTime();
           always_show = (Math.random() < 0.5);
           console.log("always show setting: " + always_show);
@@ -198,7 +198,7 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           xhr2.send('{' + 
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
-                rubric_question + '", "", "' + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
+                rubric_question + '", "' + rubric_item + '", "'  + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
                 +check_box_status+'","" ]]'  + 
         '}');
         }
@@ -377,7 +377,7 @@ function appendComments_pdf(pdf_list,rubric_question,rubric_item,submission_num,
       console.log("comment:")
       console.log(comment);
       var comment_length = comment.length;
-      values += '[ "'+parseInt(last_row+1)+'", "' + rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
+      values += '[ "", "'+ rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
       comment + '", "' + comment_length + '", "1", "1", "1", "true", "' + grader_name + '"' + 
     ' ],'
   last_row++;
