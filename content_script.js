@@ -302,7 +302,8 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
         "</tr>";
 	  }else{
 		var string = "<tr"  + 
-        " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
+		" class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
+		"<td><input  type= 'button' class='btn_pdf "+ i + "' src='" + button_url + "' height=20 width=20 /></td>" +
         	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
@@ -342,6 +343,20 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 
 	//add the comment to the ta-box when the btn_pdf is clicked
+	$('.btn_pdf').on('click',function(){
+		
+		var btn_id_num = $(this).attr("class").split(" ")[1];
+		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).text();
+		var $temp = $("<input>");
+		$("body").append($temp);
+		$temp.val($(this).parents("tr").find(".comment_"+btn_id_num).text()).select();
+		document.execCommand("copy");
+		$temp.remove();	
+		var comment_id="p_"+btn_id_num;
+		insertComment_pdf(comment,comment_id);
+
+		console.log(comment);
+});
 
 
 
@@ -468,6 +483,13 @@ function insertComment(comment, comment_id) {
   	var event = new KeyboardEvent('keydown');
   	document.querySelector('.form--textArea').dispatchEvent(event);
 }
+
+
+function insertComment_pdf(comment,comment_id){
+	comment = comment.replace(/\\"/g, '"').replace(/\\'/g, "'");
+	comments_inserted[comment_id] = comment;
+}
+
 
 function searchComments(query, search_id) {
 	var id_num = search_id.split("search_")[1];

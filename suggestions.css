@@ -118,3 +118,7 @@ a[disabled="disabled"] {
   pointer-events: auto !important;
 }
 
+.btn_pdf{
+  pointer-events:auto !important;
+}
+
