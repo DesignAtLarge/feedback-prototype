@@ -43,6 +43,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
 
+var being_clicked_in_pdf=new Set()
 
 
 //console.log($('.taBox--textarea'));
@@ -294,6 +295,10 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       if (comments[i][10] != undefined) {
 	    blank_values = comments[i][10].split(", ");
 	  }
+
+	  //NOTE: Upon Mia's request, the shade is no longer implemented here because sorting is already
+	  //done, but always feel free to add shade back
+	  //just change the rgb value from 0 to shade
 	  if(!PDF){
       var string = "<tr"  + 
 	  " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
@@ -346,16 +351,28 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	$('.btn_pdf').on('click',function(){
 		
 		var btn_id_num = $(this).attr("class").split(" ")[1];
+		var this_index = $(this).parents("div").attr('id').slice(-1)-1;
 		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).text();
 		var $temp = $("<input>");
 		$("body").append($temp);
 		$temp.val($(this).parents("tr").find(".comment_"+btn_id_num).text()).select();
 		document.execCommand("copy");
 		$temp.remove();	
-		var comment_id="p_"+btn_id_num;
+		console.log("inserting comment: " + comment);
+		console.log(full_sorted_comments[this_index]);
+		console.log(full_sorted_comments[this_index][btn_id_num]);
+		var comment_id = full_sorted_comments[this_index][btn_id_num][0];
 		insertComment_pdf(comment,comment_id);
-
-		console.log(comment);
+		being_clicked_in_pdf.add(comment);
+		chrome.runtime.sendMessage({action: "logEvent", 
+			comment_info: full_sorted_comments[this_index][btn_id_num], 
+			rubric_question: rubric_name,
+	  		rubric_item: rubric_item,
+	  		comment: comment,
+	  		submission_num: sub_number
+	}, function(response) {
+			console.log(response);
+		});  
 });
 
 
@@ -1003,10 +1020,14 @@ $(function() {
 		if($('.taBox--textarea').length>0){
 		var pdf_text_list=[]
 		while(i<$('.taBox--textarea').length){
-			pdf_text_list.push($('.taBox--textarea')[i].innerHTML)
+			var text=$('.taBox--textarea')[i].innerHTML
+			if(!being_clicked_in_pdf.has(text)){
+			pdf_text_list.push(text)
+			}
 			i++;
 		}
 		
+		being_clicked_in_pdf.clear();
 		console.log(pdf_text_list)
 		chrome.runtime.sendMessage({action:"sendPDFbox",
 		pdf_list: pdf_text_list,
