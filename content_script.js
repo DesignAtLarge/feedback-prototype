@@ -44,7 +44,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // this is specific to A6
 
 var being_clicked_in_pdf=new Set()
-
+var already_on_pdf= new Set()
 
 //console.log($('.taBox--textarea'));
 
@@ -83,6 +83,17 @@ console.log(grader_name);
 chrome.storage.local.set({assignment_num:ass_number, submission_num:sub_number});
 
 
+
+$(document).ready(function(){
+	var i=0;
+	if($('.taBox--textarea').length>0){
+	while(i<$('.taBox--textarea').length){
+		var text=$('.taBox--textarea')[i].innerHTML
+		already_on_pdf.add(text)
+		i++;
+	}
+}
+});
 
 $(document).ready(function(){
 	var student_name= $("abbr[role=button]").attr('aria-label');
@@ -210,6 +221,15 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 
 
+	//sort the comments by the first word(move them together)
+	comments= comments.sort(function(info1,info2){
+		var nameA= (info1[5].split(' '))[0].toLowerCase();
+		var nameB = (info2[5].split(' '))[0].toLowerCase();
+		if(nameA === nameB) return 0; 
+    	return nameA > nameB ? 1 : -1;
+
+	});
+
 	// sort comments ascending by length
     comments = comments.sort(function(info1, info2) {
       var length1 = parseInt(info1[6]);
@@ -224,14 +244,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
     });
 
 
-
-	comments= comments.sort(function(info1,info2){
-		var nameA= (info1[5].split(' '))[0].toLowerCase();
-		var nameB = (info2[5].split(' '))[0].toLowerCase();
-		if(nameA === nameB) return 0; 
-    	return nameA > nameB ? 1 : -1;
-
-	});
     //console.log(comments);
 
     // sort comments descending by frequency
@@ -302,18 +314,23 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  if(!PDF){
       var string = "<tr"  + 
 	  " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
-        	"<td><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
-        	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
+			"<td class='tdd_"+i+"'><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
+        	// "<td class='comment_" + i + "' datablanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }else{
 		var string = "<tr"  + 
 		" class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
-		"<td><input  type= 'button' class='btn_pdf "+ i + "' src='" + button_url + "' height=20 width=20 /></td>" +
-        	"<td class='comment_" + i + "' data-blanks='" + blank_values + "'>" + comment + "</td>" + 
+		"<td class='tdd_"+i+"'><input  type= 'button' class='btn_pdf "+ i + "' src='" + button_url + "' height=20 width=20 /></td>" +
+        	"<td class='comment_" + i + "' datablanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }
       if (category == "1") {
-        $(selector_addition + " .comments_good").append(string);
+		$(selector_addition + " .comments_good").append(string);
+		var tdd="."+"tdd_"+i
+		if($(tdd).children().length==1 && !PDF){
+		var resultLink=makeTdWithLink(comment,blank_values,i)
+		$(tdd).append(resultLink)
+		}
 	  }else {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
@@ -323,7 +340,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 	    $(selector_addition).find(".comment_" + i).each(function() {
 
-	    	var blanks = $(this).attr("data-blanks").split(",");
+	    	var blanks = $(this).attr("datablanks").split(",");
 
 	    	$(this).find(".blank").each(function() {
 		    	$(this).attr("placeholder", blanks[$(this).index()]);
@@ -352,7 +369,8 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 		
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var this_index = $(this).parents("div").attr('id').slice(-1)-1;
-		var comment= $(this).parents("tr").find(".comment_"+btn_id_num).text();
+		//var comment= $(this).parents("tr").find(".comment_"+btn_id_num).text();
+		var comment = full_sorted_comments[this_index][btn_id_num][5];
 		var $temp = $("<input>");
 		$("body").append($temp);
 		$temp.val($(this).parents("tr").find(".comment_"+btn_id_num).text()).select();
@@ -399,9 +417,17 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 			// index of this rubric item = index of these comments in full_sorted_comments
 			//* find the gradescope correspondence here***
 			var this_index = $(this).parents("div").attr('id').slice(-1)-1;
-      console.log(this_index);
-	  var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
+	  console.log(this_index);
 	  
+	  var rubric_item=$(".rubricItem--key-applied").html();
+	  rubric_item_applied=rubric_item;
+	  console.log("inserting comment: " + comment);
+      console.log(full_sorted_comments[this_index]);
+      console.log(full_sorted_comments[this_index][btn_id_num]);
+	  var comment_id = full_sorted_comments[this_index][btn_id_num][0];
+	  
+	  //var comment = $(this).parents("tr").find(".comment_" + btn_id_num).html();
+	  var comment = full_sorted_comments[this_index][btn_id_num][5];
       //console.log(comment);
 
       // remove the blanky stuff
@@ -416,12 +442,6 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       comment = comment.replace(/"/g, '\\"').replace(/'/g, "\\'");
 
 	  //var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-	  var rubric_item=$(".rubricItem--key-applied").html();
-	  rubric_item_applied=rubric_item;
-	  console.log("inserting comment: " + comment);
-      console.log(full_sorted_comments[this_index]);
-      console.log(full_sorted_comments[this_index][btn_id_num]);
-      var comment_id = full_sorted_comments[this_index][btn_id_num][0];
       insertComment(comment, comment_id);
       chrome.runtime.sendMessage({action: "logEvent", 
       							comment_info: full_sorted_comments[this_index][btn_id_num], 
@@ -1021,7 +1041,7 @@ $(function() {
 		var pdf_text_list=[]
 		while(i<$('.taBox--textarea').length){
 			var text=$('.taBox--textarea')[i].innerHTML
-			if(!being_clicked_in_pdf.has(text)){
+			if(!being_clicked_in_pdf.has(text) && !already_on_pdf.has(text)){
 			pdf_text_list.push(text)
 			}
 			i++;
@@ -1029,6 +1049,7 @@ $(function() {
 		
 		being_clicked_in_pdf.clear();
 		console.log(pdf_text_list)
+		if(pdf_text_list.length>0){
 		chrome.runtime.sendMessage({action:"sendPDFbox",
 		pdf_list: pdf_text_list,
 		rubric_question:rubric_number,
@@ -1041,6 +1062,7 @@ $(function() {
 		console.log("logging focus: " + response);
 		//console.log("RRRRRRRRR "+rubric_item);
 });
+		}
 	
 }
   });
@@ -1054,5 +1076,33 @@ $(function() {
 
 function shortenComment(comment){
 	//Find the string length
+	if(comment.length>=35){
+		return comment.substring(0,35)+"...";
+		}
+	return comment;
+	}
+
+
+function makeTdWithLink(comment,blank_values,i){
+	var len=100
+	var row=document.createElement("td")
+	row.class="comment_"+i;
+	row.datablanks=blank_values
+	var link=document.createElement("a")
+	row.innerHTML = comment.substring(0,len);  
+	link.innerHTML=comment.length>len?".....":""
+	link.href="javascript:void(0)";
+	link.onclick=function(){
+		if(link.innerHTML.indexOf("...")>0){
+		}else{
+			link.innerHTML="HIDE"
+			row.innerHTML=comment
+		}
+	}
+	row.appendChild(link)
+	return row
 }
+
+
+
 

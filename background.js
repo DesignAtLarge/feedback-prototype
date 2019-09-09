@@ -199,7 +199,7 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                 rubric_question + '", "' + rubric_item + '", "'  + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
-                +check_box_status+'","" ]]'  + 
+                +check_box_status+'", "' +grader_name+'","" ]]'  + 
         '}');
         }
         });
