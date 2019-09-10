@@ -377,7 +377,7 @@ function appendComments_pdf(pdf_list,rubric_question,rubric_item,submission_num,
       console.log("comment:")
       console.log(comment);
       var comment_length = comment.length;
-      values += '[ "", "'+ rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
+      values += '[ "'+parseInt(last_row+1)+'", "'+ rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
       comment + '", "' + comment_length + '", "1", "1", "1", "true", "' + grader_name + '"' + 
     ' ],'
   last_row++;
