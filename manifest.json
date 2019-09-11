@@ -16,6 +16,12 @@
         "mac": "Command+K"
       },
       "description": "Toggle suggestion view"
+    },
+    "new-z":{
+      "suggested_ley":{
+        "default":"Z"
+      },
+      "description": "using this to disable z"
     }
   },
 

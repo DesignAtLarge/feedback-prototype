@@ -202,6 +202,20 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
                 +check_box_status+'", "' +grader_name+'","" ]]'  + 
         '}');
         }
+
+        if(action=="onLeaving"){
+          xhr2.open("POST", 
+          "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
+            "/values/id_name!A2:H100000:append?valueInputOption=RAW",
+          true);
+        xhr2.setRequestHeader('Authorization','Bearer ' + token);
+        xhr2.setRequestHeader("Content-type", "application/json");
+
+        xhr2.send('{' + 
+        '"range": "id_name!A2:H100000",' + 
+        '"values": [[ "' + user_id + '", "' + grader_name+'","" ]]'  + 
+        '}');
+        }
         });
 
       

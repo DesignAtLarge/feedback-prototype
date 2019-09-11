@@ -45,7 +45,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 
 var being_clicked_in_pdf=new Set()
 var already_on_pdf= new Set()
-
+var len_pdf_box=0
 //console.log($('.taBox--textarea'));
 
 if(window.location.pathname.indexOf('assignments')>=0){
@@ -90,6 +90,7 @@ $(document).ready(function(){
 	while(i<$('.taBox--textarea').length){
 		var text=$('.taBox--textarea')[i].innerHTML
 		already_on_pdf.add(text)
+		
 		i++;
 	}
 }
@@ -611,16 +612,97 @@ function injectSuggestions() {
 		}
 	});
 
-	
+$(
+"<div class=pdf_comments_display>"+
+"<p>Comments you put in on PDF:</p>"+
+"</div>"
+
+).insertAfter(".form--textArea")
+
+$(document).ready(function(){
+		b=Array.from(already_on_pdf)
+		console.log(b.length)
+		for(var i=0;i<b.length;i++){
+			len_pdf_box++;
+			$('.pdf_comments_display').append("<span class='anchor_on_right'>"+b[i]+"</span>"+"<br/>")
+		}
+});
+
+$(document).change(function(){
+	var everything_on_pdf=new Set()
+	console.log(Array.from(everything_on_pdf).length)
+	for(var i=0;i<$('.taBox--textarea').length;i++){
+		var text=$('.taBox--textarea')[i].innerHTML
+		if(text!==""){
+			everything_on_pdf.add(text)
+		}
+	}
+	console.log(Array.from(everything_on_pdf).length)
+	//more comments on the pdf not on the right
+	if($('.anchor_on_right').length<$('.taBox--textarea').length){
+		console.log($('.anchor_on_right').length)
+		var set_on_right=new Set()
+		for(var j=0;j<$('.anchor_on_right').length;j++){
+			var right_text=$('.anchor_on_right')[j].innerHTML
+			set_on_right.add(right_text)
+		}
+		let diff=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+		var text=Array.from(diff)[0]
+		console.log(text)
+		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+			// var text=$('.anchor_on_right')[j].innnerHTML;
+			// if(!everything_on_pdf.has(text)){
+			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+			// }
+		
+	}else if($('.anchor_on_right').length>Array.from(everything_on_pdf).length){
+		for(var k=0;k<$('.anchor_on_right').length;k++){
+			var new_right_text=$('.anchor_on_right')[k].innerHTML
+			if(!everything_on_pdf.has(new_right_text)){
+				$('.anchor_on_right')[k].innerHTML="";
+				 $('.anchor_on_right')[k].remove()
+			}
+		}
+		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
+			
+			var set_on_right=new Set()
+		for(var j=0;j<$('.anchor_on_right').length;j++){
+			var right_text=$('.anchor_on_right')[j].innerHTML
+			set_on_right.add(right_text)
+		}
+		let diff_e_to_r=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+		
+		if(diff_e_to_r.size!=0){
+			let diff_r_to_e=new Set([...set_on_right].filter(x => !everything_on_pdf.has(x)));
+			
+			let text_to_update=Array.from(diff_r_to_e)[0]
+			let text_from_pdf=Array.from(diff_e_to_r)[0]
+			for(var k=0;k<$('.anchor_on_right').length;k++){
+				var text=$('.anchor_on_right')[k].innerHTML
+				if(text==text_to_update){
+				$('.anchor_on_right')[k].innerHTML=text_from_pdf
+				}
+			}
+			
+		}
+
+		}
+});
+
+
+
 	$(
 		"<div class='category_selection'>"+
-		"<span  id ='ins_check' style='color:red'>Check boxes below if you meet the critiria. If you don't want to comment, press 'z' for next question</span>"+
+		"<span  id ='ins_check' style='color:red'>Check boxes below if your comments on PDF or in comment box meet the critiria. If you don't want to comment, press 'z' for next question</span>"+
 		"<br/>"+
 		"<input type='checkbox' class='catCheck--spec' name='category' value='is_specific' style='height:10px; width:10px;'>Is specific"+
 		"<input type='checkbox' class='catCheck--act' name='category' value='is_actionable' style='height:10px; width:10px;'>Is actionable"+
 		"<input type='checkbox' class='catCheck--just' name='category' value='is_justified' style='height:10px; width:10px;'>Is justified"+
 		"</div>"
-	).insertAfter(".form--textArea");
+	).insertAfter(".pdf_comments_display");
+
+
+
 
 
 	//disable the nextQuestion button until all checkbox clicked
@@ -729,7 +811,26 @@ function injectSuggestions() {
 
 
 
+$(document).ready(function(){
+var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+var arr=$(".submissionGraderPoints").html().split(" ")
+arr.pop()
+var total_score=arr.pop()
+var res_total="+"+total_score
+console.log(rubric_item_score)
+console.log(total_score)
+console.log(res_total)
+if(rubric_item_score !=="-0.0" || rubric_item_score!==res_total){
+	var text=$('.form--textArea').val()
+	console.log(text)
+	if(text.length==0){
+		$(document).unbind("keypress.key90");
+	}else{
+		$(document).bind("keypress.key90",zClick());
+	}
+}
 
+});
 
 	//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
 // Select the node that will be observed for mutations
@@ -749,7 +850,16 @@ const callback = function(mutationsList, observer) {
 			var classList = mutation.target.className;
 			if(classList.indexOf("rubricItem--key-applied")>0){
 					rubric_item=$(".rubricItem--key-applied").html()
-			
+					var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+					var total_score=$(".submissionGraderPoints").html().split(" ").pop()
+					res_total="+"+total_score
+					// if(rubric_item_score !=="-0.0" || rubric_item_score!==res_total){
+					// 	if($('.form--textArea').val().length==0){
+					// 		$(document).unbind("keypress.key90");
+					// 	}else{
+					// 		$(document).bind("keypress.key90",zClick());
+					// 	}
+					// }
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
 						"<div id='mydivheader'>DRAG PDF TO ME</div>"+
@@ -1104,5 +1214,10 @@ function makeTdWithLink(comment,blank_values,i){
 }
 
 
+function zClick(){
+	temp=$(".actionBar--action-next").attr(href)
+	console.log(temp)
+	window.location.replace(temp);
+}
 
 

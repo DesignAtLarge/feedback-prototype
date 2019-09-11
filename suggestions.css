@@ -125,3 +125,9 @@ a[disabled="disabled"] {
   pointer-events:auto !important;
 }
 
+.anchor_on_right{
+  font-style:oblique;
+  display: block;
+  
+}
+
