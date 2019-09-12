@@ -45,7 +45,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 
 var being_clicked_in_pdf=new Set()
 var already_on_pdf= new Set()
-var len_pdf_box=0
+var Zdisabled=false
 //console.log($('.taBox--textarea'));
 
 if(window.location.pathname.indexOf('assignments')>=0){
@@ -623,7 +623,6 @@ $(document).ready(function(){
 		b=Array.from(already_on_pdf)
 		console.log(b.length)
 		for(var i=0;i<b.length;i++){
-			len_pdf_box++;
 			$('.pdf_comments_display').append("<span class='anchor_on_right'>"+b[i]+"</span>"+"<br/>")
 		}
 });
@@ -820,17 +819,36 @@ var res_total="+"+total_score
 console.log(rubric_item_score)
 console.log(total_score)
 console.log(res_total)
-if(rubric_item_score !=="-0.0" || rubric_item_score!==res_total){
+if(rubric_item_score !=="-0.0"){
+	if(rubric_item_score.substring(0,1)!="-"){
+		if(rubric_item_score==res_total){
+			Zdisabled=false
+			return
+		}
+	}
 	var text=$('.form--textArea').val()
 	console.log(text)
-	if(text.length==0){
-		$(document).unbind("keypress.key90");
+	if(text==""){
+		Zdisabled=true
 	}else{
-		$(document).bind("keypress.key90",zClick());
+		Zdisabled=false
 	}
 }
 
 });
+
+
+
+// $(window).on('keydown',function(event){
+// 	var keycode=event.key;
+// 	if(keycode=='z' &&Zdisabled){
+// 		alert("keycode")
+// 		alert(Zdisabled)
+// 		event.preventDefault()
+// 		//event.stopPropagation;
+// 	}
+
+// });
 
 	//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
 // Select the node that will be observed for mutations
@@ -1219,5 +1237,41 @@ function zClick(){
 	console.log(temp)
 	window.location.replace(temp);
 }
+$('.form--textArea').change(function(){
+	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+var arr=$(".submissionGraderPoints").html().split(" ")
+arr.pop()
+var total_score=arr.pop()
+var res_total="+"+total_score
+if(rubric_item_score !=="-0.0"){
+	if(rubric_item_score.substring(0,1)!="-"){
+		if(rubric_item_score==res_total){
+			Zdisabled=false
+			return
+		}
+	}
+	var text=$('.form--textArea').val()
+	console.log(text)
+	if(text==""){
+		Zdisabled=true
+	}else{
+		Zdisabled=false
+	}
+}else{
+	Zdisabled=false
+}
+});
 
 
+document.addEventListener('keydown',switchZ,true);
+function switchZ(event){
+	var keycode=event.key;
+	if(keycode=='z' &&Zdisabled){
+		alert("keycode")
+		alert(Zdisabled)
+		event.stopPropagation();
+}else{
+	$(document).unbind();
+
+}
+}
