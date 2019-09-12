@@ -1184,7 +1184,7 @@ $(function() {
 		rubric_item:$(".rubricItem--key-applied").html(),
 		submission_num:sub_number,
 		assignment_name: ass_number,
-		grader_name:grader_name
+		grader_name:user_id
 
 	},function(response) {
 		console.log("logging focus: " + response);
@@ -1267,8 +1267,6 @@ document.addEventListener('keydown',switchZ,true);
 function switchZ(event){
 	var keycode=event.key;
 	if(keycode=='z' &&Zdisabled){
-		alert("keycode")
-		alert(Zdisabled)
 		event.stopPropagation();
 }else{
 	$(document).unbind();

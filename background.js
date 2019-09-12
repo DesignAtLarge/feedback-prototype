@@ -39,7 +39,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/comments_unique!A2:K10000",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!A2:K10000",
         true);
 
       xhr.setRequestHeader('Authorization','Bearer ' + token);
