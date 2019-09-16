@@ -39,7 +39,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!A2:K10000",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/F19!A2:K10000",
         true);
 
       xhr.setRequestHeader('Authorization','Bearer ' + token);
@@ -106,14 +106,14 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
         console.log("frequency was " + cur_frequency);
 
         xhr.open("PUT", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/W16-A10!I" + row + "?valueInputOption=RAW",
+          "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/F19!I" + row + "?valueInputOption=RAW",
           true);
         xhr.setRequestHeader('Authorization','Bearer ' + token);
         xhr.setRequestHeader("Content-type", "application/json");
         //xhr.responseType = "json";
 
         xhr.send('{' + 
-          '"range": "W16-A10!I' + row + '",' + 
+          '"range": "F19!I' + row + '",' + 
           '"values": [[' + (cur_frequency + 1) + ']]' + 
         '}');
       }
@@ -358,12 +358,12 @@ function appendCommentsToSheet(values) {
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/W16-A10!A2:L10000:append?valueInputOption=RAW",
+          "/values/F19!A2:L10000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "W16-A10!A2:L10000",' + 
+        '"range": "F19!A2:L10000",' + 
         values + 
       '}');
     }
@@ -416,12 +416,12 @@ if (values != '"values": ]') {
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/W16-A10!A2:L10000:append?valueInputOption=RAW",
+          "/values/F19!A2:L10000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "W16-A10!A2:L10000",' + 
+        '"range": "F19!A2:L10000",' + 
         values + 
       '}');
     }

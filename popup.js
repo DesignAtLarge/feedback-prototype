@@ -60,9 +60,9 @@ document.addEventListener('DOMContentLoaded', function() {
       chrome.storage.local.set({user_id: user_id, always_show: always_show});
     } else if (items.always_show == undefined) {
       user_id = items.user_id;
-      always_show = (Math.random() < 0.5);
+      always_show = false;
       console.log("always show: " + always_show);
-      chrome.storage.local.set({always_show: always_show});
+      chrome.storage.local.set({always_show: false});
     } else {
       user_id = items.user_id;
       always_show = items.always_show;

@@ -614,7 +614,7 @@ function injectSuggestions() {
 
 $(
 "<div class=pdf_comments_display>"+
-"<p>Comments you put in on PDF:</p>"+
+"<p style='font-family:verdana; color:blue'>Comments you put in on PDF:</p>"+
 "</div>"
 
 ).insertAfter(".form--textArea")
@@ -692,7 +692,7 @@ $(document).change(function(){
 
 	$(
 		"<div class='category_selection'>"+
-		"<span  id ='ins_check' style='color:red'>Check boxes below if your comments on PDF or in comment box meet the critiria. If you don't want to comment, press 'z' for next question</span>"+
+		"<span  id ='ins_check' style='color:red'>Check boxes below if your comments on PDF or in comment box meet the critiria. you can press 'z' for next question as long as you put in comments for not full marks rubric items</span>"+
 		"<br/>"+
 		"<input type='checkbox' class='catCheck--spec' name='category' value='is_specific' style='height:10px; width:10px;'>Is specific"+
 		"<input type='checkbox' class='catCheck--act' name='category' value='is_actionable' style='height:10px; width:10px;'>Is actionable"+
@@ -868,16 +868,6 @@ const callback = function(mutationsList, observer) {
 			var classList = mutation.target.className;
 			if(classList.indexOf("rubricItem--key-applied")>0){
 					rubric_item=$(".rubricItem--key-applied").html()
-					var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
-					var total_score=$(".submissionGraderPoints").html().split(" ").pop()
-					res_total="+"+total_score
-					// if(rubric_item_score !=="-0.0" || rubric_item_score!==res_total){
-					// 	if($('.form--textArea').val().length==0){
-					// 		$(document).unbind("keypress.key90");
-					// 	}else{
-					// 		$(document).bind("keypress.key90",zClick());
-					// 	}
-					// }
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
 						"<div id='mydivheader'>DRAG PDF TO ME</div>"+
@@ -1261,6 +1251,8 @@ if(rubric_item_score !=="-0.0"){
 	Zdisabled=false
 }
 });
+
+
 
 
 document.addEventListener('keydown',switchZ,true);
