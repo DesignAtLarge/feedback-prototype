@@ -727,8 +727,8 @@ $(document).change(function(){
 	});
 
 
-	//trigger word function: if the 
-	$(document).change(function(){
+	//trigger word function(bonus point): some words can trigger checkboxes to be cliked
+	$('.form--textArea').change(function(){
 		comment_text = $('.form--textArea').val();
 		comment_split=comment_text.split(" ");
 		if (comment_split.includes('may')||comment_split.includes('should')){
@@ -1144,7 +1144,7 @@ $(function() {
 		chrome.runtime.sendMessage({action: "onLeaving",
 	tbox_num:$('.taBox--textarea').length,
 	rubric_question:rubric_name,
-	rubric_item:$(".rubricItem--key-applied").html(),
+	rubric_item:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
 	comment: $('.form--textArea').val(),
 	submission_num:sub_number,
 	assignment_name: ass_name,

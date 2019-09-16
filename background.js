@@ -195,6 +195,8 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
                   rubric_question + '", "", "' + always_show + '", "","'+submission_num+'","" ]]'  + 
           '}');
         }else if(action=="onLeaving"){
+          console.log("ON LEAVINGGGGGG")
+          console.log(rubric_item)
           xhr2.send('{' + 
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
@@ -392,7 +394,7 @@ function appendComments_pdf(pdf_list,rubric_question,rubric_item,submission_num,
       console.log(comment);
       var comment_length = comment.length;
       values += '[ "'+parseInt(last_row+1)+'", "'+ rubric_question + '", "'+ assignment_name+'", "'+rubric_item+'","'+submission_num+'", "' + 
-      comment + '", "' + comment_length + '", "1", "1", "1", "true", "' + grader_name + '"' + 
+      comment + '", "' + comment_length + '", "1", "1", "1", "true", "' + user_id + '"' + 
     ' ],'
   last_row++;
 
