@@ -1150,7 +1150,7 @@ $(function() {
 		chrome.runtime.sendMessage({action: "onLeaving",
 	tbox_num:$('.taBox--textarea').length,
 	rubric_question:rubric_name,
-	rubric_item: rubric_item,
+	rubric_item: $(".rubricItem--key-applied").html(),
 	rubric_point:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
 	rubric_text: $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children(".rubricField-description").html(),
 	comment: $('.form--textArea').val(),
