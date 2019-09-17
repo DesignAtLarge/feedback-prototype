@@ -317,7 +317,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       var string = "<tr"  + 
 	  " class='comment' style='color: rgb(" + 0 + ", " + 0 + ", " + 0 + ")'>" + 
 			"<td class='tdd_"+i+"'><img class='btn " + i + "' src='" + button_url + "' height=20 width=20 /></td>" +
-        	// "<td class='comment_" + i + "' datablanks='" + blank_values + "'>" + comment + "</td>" + 
+        	 "<td class='comment_" + i + "' datablanks='" + blank_values + "'>" + comment + "</td>" + 
         "</tr>";
 	  }else{
 		var string = "<tr"  + 
@@ -328,11 +328,14 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 	  }
       if (category == "1") {
 		$(selector_addition + " .comments_good").append(string);
-		var tdd="."+"tdd_"+i
-		if($(tdd).children().length==1 && !PDF){
-		var resultLink=makeTdWithLink(comment,blank_values,i)
-		$(tdd).append(resultLink)
-		}
+		// var tdd="."+"tdd_"+i
+		
+		// if($(tdd).children().length==1 && !PDF){
+		
+		// var resultLink=makeTdWithLink(comment,blank_values,i)
+		// console.log(resultLink)
+		// $(tdd).parents('tr').append(resultLink)
+		// }
 	  }else {
         $(selector_addition + " .comments_should").append("error with comment category");
       }
@@ -833,7 +836,7 @@ if(rubric_item_score !=="-0.0"){
 	}
 	var text=$('.form--textArea').val()
 	console.log(text)
-	if(text==""){
+	if(text=="" ||$('.taBox--textarea').length==0){
 		console.log("START TRUE")
 		Zdisabled=true
 	}else{
@@ -1235,7 +1238,7 @@ if(rubric_item_score !=="-0.0"){
 	}
 	var text=$('.form--textArea').val()
 	console.log(text)
-	if(text==""){
+	if(text=="" && $('.taBox--textarea').length==0){
 		Zdisabled=true
 	}else{
 		Zdisabled=false
