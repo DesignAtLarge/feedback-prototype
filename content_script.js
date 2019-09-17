@@ -64,11 +64,12 @@ if(window.location.pathname.indexOf('assignments')>=0){
 
 
 
-//follow the demo, the key is the question itself and the value is the num of rubric items
-var num_rubric_items = {1.1:7,1.2:7,1.3:7,1.4: 7,1.5: 7, 2.1:7,2.2:7, 2.3: 7, 3.1:7, 3.2:7, 3.3:7, 3.4:7, 3.5:7, 4.1:7,
-	4.2: 7, 4.3:7, 4.4:7, 4.5:7, 5.1:7, 5.2:7,5.3:7, 5.4:7, 5.5:7,6.1:7,6.2:7,6.3:7,6.4: 7,6.5: 7,
-	7.1:7,7.2:7,7.3:7,7.4: 7,7.5: 7, 2.4:7,2.5:7,
-	 1: 7, 2: 7, 3: 7, 4: 7, 5: 7, 6: 7, 7: 7};
+//follow the demo, the key is the question itself and the value is the num of rubric items,
+//total 7 questions, each with 10 rubric items
+var num_rubric_items = {1.1:10,1.2:10,1.3:10,1.4: 10,1.5: 10, 2.1:10,2.2:10, 2.3: 10, 3.1:10, 3.2:10, 3.3:10, 3.4:10, 3.5:10, 4.1:10,
+    4.2: 10, 4.3:10, 4.4:10, 4.5:10, 5.1:10, 5.2:10,5.3:10, 5.4:10, 5.5:10,6.1:10,6.2:10,6.3:10,6.4: 10,6.5: 10,
+    7.1:10,7.2:10,7.3:10,7.4: 10,7.5: 10, 2.4:10,2.5:10,
+     1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10};
 
 //get the assignment number and submission number
 var attrobj= jQuery.parseJSON($("div[data-react-class]").attr('data-react-props'));
@@ -627,66 +628,67 @@ $(document).ready(function(){
 		}
 });
 
-$(document).change(function(){
-	var everything_on_pdf=new Set()
-	console.log(Array.from(everything_on_pdf).length)
-	for(var i=0;i<$('.taBox--textarea').length;i++){
-		var text=$('.taBox--textarea')[i].innerHTML
-		if(text!==""){
-			everything_on_pdf.add(text)
-		}
-	}
-	console.log(Array.from(everything_on_pdf).length)
-	//more comments on the pdf not on the right
-	if($('.anchor_on_right').length<$('.taBox--textarea').length){
-		console.log($('.anchor_on_right').length)
-		var set_on_right=new Set()
-		for(var j=0;j<$('.anchor_on_right').length;j++){
-			var right_text=$('.anchor_on_right')[j].innerHTML
-			set_on_right.add(right_text)
-		}
-		let diff=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
-		var text=Array.from(diff)[0]
-		console.log(text)
-		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
-			// var text=$('.anchor_on_right')[j].innnerHTML;
-			// if(!everything_on_pdf.has(text)){
-			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
-			// }
+// $(document).change(function(){
+// 	var everything_on_pdf=new Set()
+// 	console.log(Array.from(everything_on_pdf).length)
+// 	for(var i=0;i<$('.taBox--textarea').length;i++){
+// 		var text=$('.taBox--textarea')[i].innerHTML
+// 		if(text!==""){
+// 			everything_on_pdf.add(text)
+// 		}
+// 	}
+// 	console.log(Array.from(everything_on_pdf).length)
+// 	//more comments on the pdf not on the right
+// 	if($('.anchor_on_right').length<$('.taBox--textarea').length){
+// 		console.log($('.anchor_on_right').length)
+// 		var set_on_right=new Set()
+// 		for(var j=0;j<$('.anchor_on_right').length;j++){
+// 			var right_text=$('.anchor_on_right')[j].innerHTML
+// 			set_on_right.add(right_text)
+// 		}
+// 		let diff=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+// 		var text=Array.from(diff)[0]
+// 		console.log(text)
+// 		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+// 			// var text=$('.anchor_on_right')[j].innnerHTML;
+// 			// if(!everything_on_pdf.has(text)){
+// 			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+// 			// }
 		
-	}else if($('.anchor_on_right').length>Array.from(everything_on_pdf).length){
-		for(var k=0;k<$('.anchor_on_right').length;k++){
-			var new_right_text=$('.anchor_on_right')[k].innerHTML
-			if(!everything_on_pdf.has(new_right_text)){
-				$('.anchor_on_right')[k].innerHTML="";
-				 $('.anchor_on_right')[k].remove()
-			}
-		}
-		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
-			
-			var set_on_right=new Set()
-		for(var j=0;j<$('.anchor_on_right').length;j++){
-			var right_text=$('.anchor_on_right')[j].innerHTML
-			set_on_right.add(right_text)
-		}
-		let diff_e_to_r=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+// 	}else if($('.anchor_on_right').length>Array.from(everything_on_pdf).length){
+// 		for(var k=0;k<$('.anchor_on_right').length;k++){
+// 			var new_right_text=$('.anchor_on_right')[k].innerHTML
+// 			if(!everything_on_pdf.has(new_right_text)){
+// 				$('.anchor_on_right')[k].innerHTML="";
+// 				 $('.anchor_on_right')[k].remove()
+// 			}
+// 		}
+// 		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
+// 			console.log("CDSDLFKDSLFJK")
+// 			var set_on_right=new Set()
+// 		for(var j=0;j<$('.anchor_on_right').length;j++){
+// 			var right_text=$('.anchor_on_right')[j].innerHTML
+// 			set_on_right.add(right_text)
+// 		}
+// 		let diff_e_to_r=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
 		
-		if(diff_e_to_r.size!=0){
-			let diff_r_to_e=new Set([...set_on_right].filter(x => !everything_on_pdf.has(x)));
+// 		if(diff_e_to_r.size!=0){
+// 			let diff_r_to_e=new Set([...set_on_right].filter(x => !everything_on_pdf.has(x)));
 			
-			let text_to_update=Array.from(diff_r_to_e)[0]
-			let text_from_pdf=Array.from(diff_e_to_r)[0]
-			for(var k=0;k<$('.anchor_on_right').length;k++){
-				var text=$('.anchor_on_right')[k].innerHTML
-				if(text==text_to_update){
-				$('.anchor_on_right')[k].innerHTML=text_from_pdf
-				}
-			}
+// 			let text_to_update=Array.from(diff_r_to_e)[0]
+// 			let text_from_pdf=Array.from(diff_e_to_r)[0]
+// 			console.log(text_from_pdf)
+// 			for(var k=0;k<$('.anchor_on_right').length;k++){
+// 				var text=$('.anchor_on_right')[k].innerHTML
+// 				if(text==text_to_update){
+// 				$('.anchor_on_right')[k].innerHTML=text_from_pdf
+// 				}
+// 			}
 			
-		}
+// 		}
 
-		}
-});
+// 		}
+// });
 
 
 
@@ -812,6 +814,9 @@ $(document).change(function(){
 
 $(document).ready(function(){
 var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+if(rubric_item_score==undefined){
+	return
+}
 var arr=$(".submissionGraderPoints").html().split(" ")
 arr.pop()
 var total_score=arr.pop()
@@ -829,6 +834,7 @@ if(rubric_item_score !=="-0.0"){
 	var text=$('.form--textArea').val()
 	console.log(text)
 	if(text==""){
+		console.log("START TRUE")
 		Zdisabled=true
 	}else{
 		Zdisabled=false
@@ -838,17 +844,6 @@ if(rubric_item_score !=="-0.0"){
 });
 
 
-
-// $(window).on('keydown',function(event){
-// 	var keycode=event.key;
-// 	if(keycode=='z' &&Zdisabled){
-// 		alert("keycode")
-// 		alert(Zdisabled)
-// 		event.preventDefault()
-// 		//event.stopPropagation;
-// 	}
-
-// });
 
 	//Things in here is to make the selection of rubric items can be both be clicked/by keyboard
 // Select the node that will be observed for mutations
@@ -866,7 +861,7 @@ const callback = function(mutationsList, observer) {
         }
         else if (mutation.type === 'attributes') {
 			var classList = mutation.target.className;
-			if(classList.indexOf("rubricItem--key-applied")>0){
+			if(classList.indexOf("rubricItem--key-applied")>=0){
 					rubric_item=$(".rubricItem--key-applied").html()
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
@@ -1160,7 +1155,10 @@ $(function() {
 		while(i<$('.taBox--textarea').length){
 			var text=$('.taBox--textarea')[i].innerHTML
 			if(!being_clicked_in_pdf.has(text) && !already_on_pdf.has(text)){
+			text=checkEqualTextPDF(text,full_sorted_comments)
+			if(text!==undefined){
 			pdf_text_list.push(text)
+			}
 			}
 			i++;
 		}
@@ -1222,11 +1220,6 @@ function makeTdWithLink(comment,blank_values,i){
 }
 
 
-function zClick(){
-	temp=$(".actionBar--action-next").attr(href)
-	console.log(temp)
-	window.location.replace(temp);
-}
 $('.form--textArea').change(function(){
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 var arr=$(".submissionGraderPoints").html().split(" ")
@@ -1253,15 +1246,109 @@ if(rubric_item_score !=="-0.0"){
 });
 
 
+// check if the current comments is 
+function checkEqualTextPDF(comment,full_comments){
+	for(let i=0;i<full_comments[full_comments.length-1].length;i++){
+		if (full_comments[full_comments.length-1][i][5]==comment){
+			return undefined
+		}else if(comment.indexOf(full_comments[full_comments.length-1][i][5])>=0){
+			//only accept addendum to original comments
+			if(comment.indexOf(full_comments[full_comments.length-1][i][5])==0){
+				return comment.substring(comment.indexOf(full_comments[full_comments.length-1][i][5])+full_comments[full_comments.length-1][i][5].length);
+			}
+		}else{
+			continue
+		}
+	}
+	return comment
+}
 
 
+
+// $(document).change(function(){
+// 	if(Zdisabled){
+// 		alert("TRUE")
+// 		document.addEventListener('keydown',switchZ,true);
+// 	}else{
+// 		alert("FALSE")
+// 		document.removeEventListener('keydown',switchZ,true);
+// 	}
+// })
 document.addEventListener('keydown',switchZ,true);
 function switchZ(event){
 	var keycode=event.key;
 	if(keycode=='z' &&Zdisabled){
-		event.stopPropagation();
+		
+		event.stopImmediatePropagation();
 }else{
-	$(document).unbind();
+	// $(document).unbind();
+	// $(document).bind()
+	document.removeEventListener('keydown',switchZ,true);
 
 }
 }
+
+
+
+
+$(document).change(function(){
+	var everything_on_pdf=new Set()
+	console.log(Array.from(everything_on_pdf).length)
+	for(var i=0;i<$('.taBox--textarea').length;i++){
+		var text=$('.taBox--textarea')[i].innerHTML
+		if(text!==""){
+			everything_on_pdf.add(text)
+		}
+	}
+	console.log(Array.from(everything_on_pdf).length)
+	//more comments on the pdf not on the right
+	if($('.anchor_on_right').length<$('.taBox--textarea').length){
+		console.log($('.anchor_on_right').length)
+		var set_on_right=new Set()
+		for(var j=0;j<$('.anchor_on_right').length;j++){
+			var right_text=$('.anchor_on_right')[j].innerHTML
+			set_on_right.add(right_text)
+		}
+		let diff=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+		var text=Array.from(diff)[0]
+		console.log(text)
+		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+			// var text=$('.anchor_on_right')[j].innnerHTML;
+			// if(!everything_on_pdf.has(text)){
+			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+			// }
+		
+	}else if($('.anchor_on_right').length>Array.from(everything_on_pdf).length){
+		for(var k=0;k<$('.anchor_on_right').length;k++){
+			var new_right_text=$('.anchor_on_right')[k].innerHTML
+			if(!everything_on_pdf.has(new_right_text)){
+				$('.anchor_on_right')[k].innerHTML="";
+				 $('.anchor_on_right')[k].remove()
+			}
+		}
+		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
+			console.log("CDSDLFKDSLFJK")
+			var set_on_right=new Set()
+		for(var j=0;j<$('.anchor_on_right').length;j++){
+			var right_text=$('.anchor_on_right')[j].innerHTML
+			set_on_right.add(right_text)
+		}
+		let diff_e_to_r=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
+		
+		if(diff_e_to_r.size!=0){
+			let diff_r_to_e=new Set([...set_on_right].filter(x => !everything_on_pdf.has(x)));
+			
+			let text_to_update=Array.from(diff_r_to_e)[0]
+			let text_from_pdf=Array.from(diff_e_to_r)[0]
+			console.log(text_from_pdf)
+			for(var k=0;k<$('.anchor_on_right').length;k++){
+				var text=$('.anchor_on_right')[k].innerHTML
+				if(text==text_to_update){
+				$('.anchor_on_right')[k].innerHTML=text_from_pdf
+				}
+			}
+			
+		}
+
+		}
+})
