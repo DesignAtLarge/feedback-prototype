@@ -43,6 +43,7 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 // key = rubric question number, value = how many rubric items that question has
 // this is specific to A6
 
+
 var being_clicked_in_pdf=new Set()
 var already_on_pdf= new Set()
 var Zdisabled=false
@@ -69,7 +70,9 @@ if(window.location.pathname.indexOf('assignments')>=0){
 var num_rubric_items = {1.1:10,1.2:10,1.3:10,1.4: 10,1.5: 10, 2.1:10,2.2:10, 2.3: 10, 3.1:10, 3.2:10, 3.3:10, 3.4:10, 3.5:10, 4.1:10,
     4.2: 10, 4.3:10, 4.4:10, 4.5:10, 5.1:10, 5.2:10,5.3:10, 5.4:10, 5.5:10,6.1:10,6.2:10,6.3:10,6.4: 10,6.5: 10,
     7.1:10,7.2:10,7.3:10,7.4: 10,7.5: 10, 2.4:10,2.5:10,
-     1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10};
+	 1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10,8:10,9:10,10:10,1.6:10,1.7:10,1.8:10,2.6:10,2.7:10,2.8:10,
+	 3.6:10,3.7:10,3.8:10,4.6:10,4.7:10,4.8:10,5.6:10,5.7:10,5.8:10,6.6:10,6.7:10,6.8:10,
+	 7.6:10,7.7:10,7.8:10};
 
 //get the assignment number and submission number
 var attrobj= jQuery.parseJSON($("div[data-react-class]").attr('data-react-props'));
@@ -711,7 +714,9 @@ $(document).ready(function(){
 
 	//disable the nextQuestion button until all checkbox clicked
 	$(document).ready(function(){
+		if(Zdisabled){
 		$(".actionBar--action-next").attr('disabled',true);
+		}
 		let cur_url= window.location.href
 		chrome.storage.local.get(null, function(items){
 		url_list= items.url_list;
@@ -785,12 +790,15 @@ $(document).ready(function(){
 
 
 	$(document).change(function(){
-		var count=$('input[name="category"]:checked').length;
-		if(count==3){
-			$(".actionBar--action-next").attr('disabled',false);
-		}else{
-			$(".actionBar--action-next").attr('disabled',true);
+		if(Zdisabled){
+
 		}
+		// var count=$('input[name="category"]:checked').length;
+		// if(count==3){
+		// 	$(".actionBar--action-next").attr('disabled',false);
+		// }else{
+		// 	$(".actionBar--action-next").attr('disabled',true);
+		// }
 
 
 	});
@@ -1142,7 +1150,9 @@ $(function() {
 		chrome.runtime.sendMessage({action: "onLeaving",
 	tbox_num:$('.taBox--textarea').length,
 	rubric_question:rubric_name,
-	rubric_item:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
+	rubric_item: rubric_item,
+	rubric_point:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
+	rubric_text: $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children(".rubricField-description").html(),
 	comment: $('.form--textArea').val(),
 	submission_num:sub_number,
 	assignment_name: ass_name,
@@ -1195,8 +1205,8 @@ $(function() {
 
 function shortenComment(comment){
 	//Find the string length
-	if(comment.length>=35){
-		return comment.substring(0,35)+"...";
+	if(comment.length>=100){
+		return comment.substring(0,100);
 		}
 	return comment;
 	}
@@ -1216,6 +1226,25 @@ function makeTdWithLink(comment,blank_values,i){
 		}else{
 			link.innerHTML="HIDE"
 			row.innerHTML=comment
+		}
+	}
+	row.appendChild(link)
+	return row
+}
+
+
+
+function makeCommentLink(comment){
+	var len=100;
+	var row=document.createElement("span")
+	var link=document.createElement("a")
+	link.innerHTML=comment.length>len?".....":"";
+	link.href="javascript:void(0)";
+	link.onclick=function(){
+		if(link.innerHTML.indexOf("...")>=0){
+			row.innerHTML=comment(len,comment.length)
+		}else{
+			link.innerHTML="HIDE"
 		}
 	}
 	row.appendChild(link)
@@ -1330,7 +1359,6 @@ $(document).change(function(){
 			}
 		}
 		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
-			console.log("CDSDLFKDSLFJK")
 			var set_on_right=new Set()
 		for(var j=0;j<$('.anchor_on_right').length;j++){
 			var right_text=$('.anchor_on_right')[j].innerHTML

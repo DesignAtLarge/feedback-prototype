@@ -3,7 +3,7 @@
 //NOTICE: make headings first for the table(A1:L1 for comment sheet) then do the insertions!!
 //otherwise, table range will be a mess
 var comment_sheet_id = "1HdcveHzPgCNc1lCp_Lfb7MX3O51p3u5jKrnxOw-66bQ";
-var event_sheet_id = "11mbvJusJtSQ4IjWPSwROlZdygijXDv0YWeI3LREfdbw";
+var event_sheet_id = "18aitRp5Bubiuapjo_pMeV6EE0Ixv3yE8zrli3y7QPx4";
 var user_id;
 var always_show;
 var on_grading_page;
@@ -70,7 +70,7 @@ function loadSpreadsheet() {
   });
 }
 
-function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num,assignment_name,grader_name,check_box_status) {
+function updateSheets(action, submission_num,rubric_question, rubric_item, comment_info, comment,tbox_num,assignment_name,grader_name,check_box_status,rubric_point,rubric_text) {
   store_rubric_item=rubric_item;
   console.log(typeof(store_rubric_item));
   console.log("store_rubric_item is "+store_rubric_item);
@@ -201,23 +201,23 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           '"range": "A10!A2:H100000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                 rubric_question + '", "' + rubric_item + '", "'  + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
-                +check_box_status+'", "' +grader_name+'","" ]]'  + 
+                +check_box_status+'", "' +grader_name+'", "'+rubric_point+'", "'+rubric_text+'","" ]]'  + 
         '}');
         }
 
-        if(action=="onLeaving"){
-          xhr2.open("POST", 
-          "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
-            "/values/id_name!A2:H100000:append?valueInputOption=RAW",
-          true);
-        xhr2.setRequestHeader('Authorization','Bearer ' + token);
-        xhr2.setRequestHeader("Content-type", "application/json");
+        // if(action=="onLeaving"){
+        //   xhr2.open("POST", 
+        //   "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
+        //     "/values/id_name!A2:H100000:append?valueInputOption=RAW",
+        //   true);
+        // xhr2.setRequestHeader('Authorization','Bearer ' + token);
+        // xhr2.setRequestHeader("Content-type", "application/json");
 
-        xhr2.send('{' + 
-        '"range": "id_name!A2:H100000",' + 
-        '"values": [[ "' + user_id + '", "' + grader_name+'","" ]]'  + 
-        '}');
-        }
+        // xhr2.send('{' + 
+        // '"range": "id_name!A2:H100000",' + 
+        // '"values": [[ "' + user_id + '", "' + grader_name+'","" ]]'  + 
+        // '}');
+        // }
         });
 
       
@@ -230,6 +230,8 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           message = chrome.runtime.lastError.message;
       console.log("Not signed into Chrome, network error or no permission.\n" + message);
     }
+
+
 
   });
 }
@@ -532,7 +534,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.action == "onLeaving") {
     //NOTICE: SINCE WE ARE ALWAYS USING GRADING PAGE, ongrading is useless
     //on_grading_page = false;
-    updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name,request.grader_name,request.check_box_status);
+    updateSheets("onLeaving", request.submission_num,request.rubric_question,request.rubric_item,undefined,request.comment,request.tbox_num,request.assignment_name,request.grader_name,request.check_box_status,request.rubric_point,request.rubric_text);
   }else if (request.action == "logPDFFocus") {
     updateSheets("pdf focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
