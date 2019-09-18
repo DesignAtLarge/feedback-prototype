@@ -323,14 +323,14 @@ function saveNewComment() {
 
       // if any comments left in inserted comments, just append them and figure it out manually
       //    be sure to include original comment id
-      for (var comment_id in inserted_comments) {
-        if (inserted_comments[comment_id] != "") {
-          values += '[ "", "' + rubric_number + '", "", "'+rubric_item+","+ comment_id + '", "' + 
-              inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].length + 
-              '", "1", "1", "1", "", "' + user_id + '"' + 
-            ' ],'
-        }
-      }
+      // for (var comment_id in inserted_comments) {
+      //   if (inserted_comments[comment_id] != "") {
+      //     values += '[ "", "' + rubric_number + '", "", "'+rubric_item+","+ comment_id + '", "' + 
+      //         inserted_comments[comment_id] + '", "' + inserted_comments[comment_id].length + 
+      //         '", "1", "1", "1", "", "' + user_id + '"' + 
+      //       ' ],'
+      //   }
+      // }
       values = values.slice(0, values.length-1) + ']';
       if (values != '"values": ]') {
         appendCommentsToSheet(values);

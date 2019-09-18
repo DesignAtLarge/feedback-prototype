@@ -380,6 +380,8 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 		
 		var btn_id_num = $(this).attr("class").split(" ")[1];
 		var this_index = $(this).parents("div").attr('id').slice(-1)-1;
+		Zdisabled=false
+		$(".actionBar--action-next").attr('disabled',false);
 		//var comment= $(this).parents("tr").find(".comment_"+btn_id_num).text();
 		var comment = full_sorted_comments[this_index][btn_id_num][5];
 		var $temp = $("<input>");
@@ -429,7 +431,8 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 			//* find the gradescope correspondence here***
 			var this_index = $(this).parents("div").attr('id').slice(-1)-1;
 	  console.log(this_index);
-	  
+	  Zdisabled=false
+	  $(".actionBar--action-next").attr('disabled',false);
 	  var rubric_item=$(".rubricItem--key-applied").html();
 	  rubric_item_applied=rubric_item;
 	  console.log("inserting comment: " + comment);
@@ -468,7 +471,44 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 }
 
-
+$(".rubricItem--key").change(function(){
+	alert("FUCK")
+	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+	try{
+	var arr=$(".submissionGraderPoints").html().split(" ")
+	}
+	catch(error){
+		return
+	}
+	arr.pop()
+	var total_score=arr.pop()
+	var res_total="+"+total_score
+	if(rubric_item_score==undefined){
+		Zdisabled=true
+		$(".actionBar--action-next").attr('disabled',true);
+		return
+	}
+	if(rubric_item_score !=="-0.0"){
+		if(rubric_item_score.substring(0,1)!="-"){
+			if(rubric_item_score==res_total){
+				Zdisabled=false
+				$(".actionBar--action-next").attr('disabled',false);
+				return
+			}
+			if($('.tabox--textarea').length>0){
+				Zdisabled=false
+				$(".actionBar--action-next").attr('disabled',false);
+				return
+			}
+			Zdisabled=true
+			$(".actionBar--action-next").attr('disabled',true);
+		}
+	}else{
+		Zdisabled=false
+		$(".actionBar--action-next").attr('disabled',false);
+		return
+	}
+	})
 
 
 
@@ -821,6 +861,32 @@ const callback = function(mutationsList, observer) {
 						"</div>" + 
 					"</div>"
 					));
+					
+					var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+					var arr=$(".submissionGraderPoints").html().split(" ")
+					arr.pop()
+					var total_score=arr.pop()
+					var res_total="+"+total_score
+					if(rubric_item_score !=="-0.0"){
+						if($('.tabox--textarea').length>0){
+							Zdisabled=false
+							$(".actionBar--action-next").attr('disabled',false);
+						}
+						if(rubric_item_score.substring(0,1)!="-"){
+							if(rubric_item_score==res_total){
+								Zdisabled=false
+								$(".actionBar--action-next").attr('disabled',false);
+								
+							}
+						}
+						Zdisabled=true
+						$(".actionBar--action-next").attr('disabled',true);
+					}else{
+						Zdisabled=false
+						$(".actionBar--action-next").attr('disabled',false);
+						
+					}
+
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
 					storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
 					
@@ -833,6 +899,10 @@ const callback = function(mutationsList, observer) {
 			}
 			}else{
 				$('.suggestion_container_pdf').remove();
+				if($(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html()==undefined){
+				Zdisabled=true
+				$(".actionBar--action-next").attr('disabled',true);
+				}
 				var id=$(mutation.target).html();
 				console.log("IIID  dis appear is: "+id);
 				if (!$('suggestion_container_'+id).is(":visible")) {
@@ -879,15 +949,16 @@ observer.observe(targetNode[i], config);
 	});
 
 	// $("taBox--textarea").focus(function(){
-	// 	var rubric_item=$(".rubricItem--key-applied").html();
+	// 	//var rubric_item=$(".rubricItem--key-applied").html();
+		
 
-	// 	chrome.runtime.sendMessage({action:"logPDFFocus",
-	// 	rubric_question: rubric_name,
-	// 	rubric_item: rubric_item,																	
-	// 	submission_num: sub_number															
-	// },function(response){
-	// 	console.log("logging pdf event: "+response);
-	// });
+	// // 	chrome.runtime.sendMessage({action:"logPDFFocus",
+	// // 	rubric_question: rubric_name,
+	// // 	rubric_item: rubric_item,																	
+	// // 	submission_num: sub_number															
+	// // },function(response){
+	// // 	console.log("logging pdf event: "+response);
+	// // });
 	// });
 	// see/hide button functionality
 	$(".see_suggestions").click(function() {
@@ -1073,7 +1144,6 @@ $(function() {
 
 	}
 	
-
 
 	$('.actionBar--action-next').click(everyUnloading);
 
@@ -1264,45 +1334,10 @@ function makeCommentLink(comment){
 	return row
 }
 
-$(document).change(function(){
-var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
-try{
-var arr=$(".submissionGraderPoints").html().split(" ")
-}
-catch(error){
-	return
-}
-arr.pop()
-var total_score=arr.pop()
-var res_total="+"+total_score
-if(rubric_item_score==undefined){
-	Zdisabled=true
-	$(".actionBar--action-next").attr('disabled',true);
-	return
-}
-if(rubric_item_score !=="-0.0"){
-	if(rubric_item_score.substring(0,1)!="-"){
-		if(rubric_item_score==res_total){
-			Zdisabled=false
-			$(".actionBar--action-next").attr('disabled',false);
-			return
-		}
-		if($('.tabox--textarea').length>0){
-			Zdisabled=false
-			$(".actionBar--action-next").attr('disabled',false);
-			return
-		}
-		Zdisabled=true
-		$(".actionBar--action-next").attr('disabled',true);
-	}
-}else{
-	Zdisabled=false
-	$(".actionBar--action-next").attr('disabled',false);
-	return
-}
-})
+
 
 $('.form--textArea').change(function(){
+	alert("FUCK")
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 try{
 var arr=$(".submissionGraderPoints").html().split(" ")
@@ -1384,6 +1419,7 @@ function switchZ(event){
 	//alert("FUCK")
 	//everyUnloading()
 
+// }
 }
 }
 
@@ -1391,6 +1427,7 @@ function switchZ(event){
 
 
 $(document).change(function(){
+	alert("FUCK")
 	var everything_on_pdf=new Set()
 	console.log(Array.from(everything_on_pdf).length)
 	for(var i=0;i<$('.taBox--textarea').length;i++){
@@ -1400,6 +1437,10 @@ $(document).change(function(){
 		}
 	}
 	console.log(Array.from(everything_on_pdf).length)
+	if(Array.from(everything_on_pdf).length>0){
+		Zdisabled=false
+		$(".actionBar--action-next").attr('disabled',false);
+	}
 	//more comments on the pdf not on the right
 	if($('.anchor_on_right').length<$('.taBox--textarea').length){
 		console.log($('.anchor_on_right').length)
