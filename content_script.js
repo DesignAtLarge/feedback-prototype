@@ -49,19 +49,22 @@ var already_on_pdf= new Set()
 var Zdisabled=false
 //console.log($('.taBox--textarea'));
 
-if(window.location.pathname.indexOf('assignments')>=0){
-	console.log("in batch page");
-	url_set= new Set();
-	var i=0;
-	let list= $("a[class='link-noUnderline']");
-	while(i<list.length){
-		url_set.add(list[i].href);
-		i++;
-	}
-	var url_list=Array.from(url_set);
-	console.log(url_list);
-	chrome.storage.local.set({url_list:url_list});
-}
+
+
+
+// if(window.location.pathname.indexOf('assignments')>=0){
+// 	console.log("in batch page");
+// 	url_set= new Set();
+// 	var i=0;
+// 	let list= $("a[class='link-noUnderline']");
+// 	while(i<list.length){
+// 		url_set.add(list[i].href);
+// 		i++;
+// 	}
+// 	var url_list=Array.from(url_set);
+// 	console.log(url_list);
+// 	chrome.storage.local.set({url_list:url_list});
+// }
 
 
 
@@ -652,27 +655,27 @@ $(document).ready(function(){
 
 
 
-	//disable the nextQuestion button until all checkbox clicked
-	$(document).ready(function(){
+	// //disable the nextQuestion button until all checkbox clicked
+	// $(document).ready(function(){
 
-		let cur_url= window.location.href
-		chrome.storage.local.get(null, function(items){
-		url_list= items.url_list;
-		console.log(url_list.length);
-		url_list.forEach(function(element){
-			if(cur_url.indexOf(element)>-1){
-				url_list=url_list.filter(function(a){return a!==element;});
-			}
-		});
-		console.log(url_list.length);
-		chrome.storage.local.set({url_list:url_list});
-			if((url_list).length>0){
-				console.log($(".actionBar--action-next")[0].href);
-				$(".actionBar--action-next")[0].href=url_list[Math.floor(Math.random() * url_list.length)];
-				console.log($(".actionBar--action-next")[0].href);
-			}
-		})
-	});
+	// 	let cur_url= window.location.href
+	// 	chrome.storage.local.get(null, function(items){
+	// 	url_list= items.url_list;
+	// 	console.log(url_list.length);
+	// 	url_list.forEach(function(element){
+	// 		if(cur_url.indexOf(element)>-1){
+	// 			url_list=url_list.filter(function(a){return a!==element;});
+	// 		}
+	// 	});
+	// 	console.log(url_list.length);
+	// 	chrome.storage.local.set({url_list:url_list});
+	// 		if((url_list).length>0){
+	// 			console.log($(".actionBar--action-next")[0].href);
+	// 			$(".actionBar--action-next")[0].href=url_list[Math.floor(Math.random() * url_list.length)];
+	// 			console.log($(".actionBar--action-next")[0].href);
+	// 		}
+	// 	})
+	// });
 
 
 	//trigger word function(bonus point): some words can trigger checkboxes to be cliked
@@ -1166,6 +1169,7 @@ function everyUnloading(){
 			}
 			
 			being_clicked_in_pdf.clear();
+			already_on_pdf.clear();
 			console.log(pdf_text_list)
 			if(pdf_text_list.length>0){
 			chrome.runtime.sendMessage({action:"sendPDFbox",
@@ -1174,7 +1178,7 @@ function everyUnloading(){
 			rubric_item:$(".rubricItem--key-applied").html(),
 			submission_num:sub_number,
 			assignment_name: ass_number,
-			grader_name:user_id
+			grader_name:grader_name
 	
 		},function(response) {
 			console.log("logging focus: " + response);
@@ -1283,6 +1287,13 @@ if(rubric_item_score !=="-0.0"){
 			$(".actionBar--action-next").attr('disabled',false);
 			return
 		}
+		if($('.tabox--textarea').length>0){
+			Zdisabled=false
+			$(".actionBar--action-next").attr('disabled',false);
+			return
+		}
+		Zdisabled=true
+		$(".actionBar--action-next").attr('disabled',true);
 	}
 }else{
 	Zdisabled=false
@@ -1361,8 +1372,11 @@ function switchZ(event){
 		event.stopImmediatePropagation();
 }else if(keycode=='z' &&!Zdisabled){
 	if(!$('.form--textArea').is(':focus')  && !$('taBox--textarea').is(':focus')){
+		var text=$('.form--textArea').val()
+		if(text==""||text==undefined){
+			everyUnloading()
+		}
 		
-		everyUnloading()
 	}
 	// $(document).unbind();
 	// $(document).bind()
