@@ -634,67 +634,7 @@ $(document).ready(function(){
 		}
 });
 
-// $(document).change(function(){
-// 	var everything_on_pdf=new Set()
-// 	console.log(Array.from(everything_on_pdf).length)
-// 	for(var i=0;i<$('.taBox--textarea').length;i++){
-// 		var text=$('.taBox--textarea')[i].innerHTML
-// 		if(text!==""){
-// 			everything_on_pdf.add(text)
-// 		}
-// 	}
-// 	console.log(Array.from(everything_on_pdf).length)
-// 	//more comments on the pdf not on the right
-// 	if($('.anchor_on_right').length<$('.taBox--textarea').length){
-// 		console.log($('.anchor_on_right').length)
-// 		var set_on_right=new Set()
-// 		for(var j=0;j<$('.anchor_on_right').length;j++){
-// 			var right_text=$('.anchor_on_right')[j].innerHTML
-// 			set_on_right.add(right_text)
-// 		}
-// 		let diff=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
-// 		var text=Array.from(diff)[0]
-// 		console.log(text)
-// 		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
-// 			// var text=$('.anchor_on_right')[j].innnerHTML;
-// 			// if(!everything_on_pdf.has(text)){
-// 			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
-// 			// }
-		
-// 	}else if($('.anchor_on_right').length>Array.from(everything_on_pdf).length){
-// 		for(var k=0;k<$('.anchor_on_right').length;k++){
-// 			var new_right_text=$('.anchor_on_right')[k].innerHTML
-// 			if(!everything_on_pdf.has(new_right_text)){
-// 				$('.anchor_on_right')[k].innerHTML="";
-// 				 $('.anchor_on_right')[k].remove()
-// 			}
-// 		}
-// 		}else if($('.anchor_on_right').length==Array.from(everything_on_pdf).length){
-// 			console.log("CDSDLFKDSLFJK")
-// 			var set_on_right=new Set()
-// 		for(var j=0;j<$('.anchor_on_right').length;j++){
-// 			var right_text=$('.anchor_on_right')[j].innerHTML
-// 			set_on_right.add(right_text)
-// 		}
-// 		let diff_e_to_r=new Set([...everything_on_pdf].filter(x => !set_on_right.has(x)));
-		
-// 		if(diff_e_to_r.size!=0){
-// 			let diff_r_to_e=new Set([...set_on_right].filter(x => !everything_on_pdf.has(x)));
-			
-// 			let text_to_update=Array.from(diff_r_to_e)[0]
-// 			let text_from_pdf=Array.from(diff_e_to_r)[0]
-// 			console.log(text_from_pdf)
-// 			for(var k=0;k<$('.anchor_on_right').length;k++){
-// 				var text=$('.anchor_on_right')[k].innerHTML
-// 				if(text==text_to_update){
-// 				$('.anchor_on_right')[k].innerHTML=text_from_pdf
-// 				}
-// 			}
-			
-// 		}
 
-// 		}
-// });
 
 
 
@@ -935,17 +875,17 @@ observer.observe(targetNode[i], config);
 		});
 	});
 
-	$("taBox--textarea").focus(function(){
-		var rubric_item=$(".rubricItem--key-applied").html();
+	// $("taBox--textarea").focus(function(){
+	// 	var rubric_item=$(".rubricItem--key-applied").html();
 
-		chrome.runtime.sendMessage({action:"logPDFFocus",
-		rubric_question: rubric_name,
-		rubric_item: rubric_item,																	
-		submission_num: sub_number															
-	},function(response){
-		console.log("logging pdf event: "+response);
-	});
-	});
+	// 	chrome.runtime.sendMessage({action:"logPDFFocus",
+	// 	rubric_question: rubric_name,
+	// 	rubric_item: rubric_item,																	
+	// 	submission_num: sub_number															
+	// },function(response){
+	// 	console.log("logging pdf event: "+response);
+	// });
+	// });
 	// see/hide button functionality
 	$(".see_suggestions").click(function() {
 		var selected_id_num = this.id.split("see_suggestions_")[1];
@@ -980,20 +920,20 @@ observer.observe(targetNode[i], config);
 }
 
 
-$(document).change(function(){
-	if($('.taBox-is-editing')){
-		var rubric_item=$(".rubricItem--key-applied").html();
+// $(document).change(function(){
+// 	if($('.taBox-is-editing')){
+// 		var rubric_item=$(".rubricItem--key-applied").html();
 
-		chrome.runtime.sendMessage({action:"logPDFFocus",
-		rubric_question: rubric_name,
-		rubric_item: rubric_item,																	
-		submission_num:sub_number																
-	},function(response){
-		console.log("logging pdf event: "+response);
-	});	
+// 		chrome.runtime.sendMessage({action:"logPDFFocus",
+// 		rubric_question: rubric_name,
+// 		rubric_item: rubric_item,																	
+// 		submission_num:sub_number																
+// 	},function(response){
+// 		console.log("logging pdf event: "+response);
+// 	});	
 
-	}
-});
+// 	}
+// });
 
 
 
@@ -1322,10 +1262,20 @@ function makeCommentLink(comment){
 
 $(document).change(function(){
 var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+try{
 var arr=$(".submissionGraderPoints").html().split(" ")
+}
+catch(error){
+	return
+}
 arr.pop()
 var total_score=arr.pop()
 var res_total="+"+total_score
+if(rubric_item_score==undefined){
+	Zdisabled=true
+	$(".actionBar--action-next").attr('disabled',true);
+	return
+}
 if(rubric_item_score !=="-0.0"){
 	if(rubric_item_score.substring(0,1)!="-"){
 		if(rubric_item_score==res_total){
@@ -1343,10 +1293,20 @@ if(rubric_item_score !=="-0.0"){
 
 $('.form--textArea').change(function(){
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
+try{
 var arr=$(".submissionGraderPoints").html().split(" ")
+}
+catch(error){
+	return
+}
 arr.pop()
 var total_score=arr.pop()
 var res_total="+"+total_score
+if(rubric_item_score==undefined){
+	Zdisabled=true
+	$(".actionBar--action-next").attr('disabled',true);
+	return
+}
 if(rubric_item_score !=="-0.0"){
 	if(rubric_item_score.substring(0,1)!="-"){
 		if(rubric_item_score==res_total){
@@ -1393,15 +1353,6 @@ function checkEqualTextPDF(comment,full_comments){
 
 
 
-// $(document).change(function(){
-// 	if(Zdisabled){
-// 		alert("TRUE")
-// 		document.addEventListener('keydown',switchZ,true);
-// 	}else{
-// 		alert("FALSE")
-// 		document.removeEventListener('keydown',switchZ,true);
-// 	}
-// })
 document.addEventListener('keydown',switchZ,true);
 function switchZ(event){
 	var keycode=event.key;
