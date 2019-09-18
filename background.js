@@ -2,7 +2,7 @@
 //A10 is the event sheet name used
 //NOTICE: make headings first for the table(A1:L1 for comment sheet) then do the insertions!!
 //otherwise, table range will be a mess
-var comment_sheet_id = "1HdcveHzPgCNc1lCp_Lfb7MX3O51p3u5jKrnxOw-66bQ";
+var comment_sheet_id = "1YYVkmMhcgg-UvtntZ88e_nMiST5VGdipj7TVHZKD_qg";
 var event_sheet_id = "18aitRp5Bubiuapjo_pMeV6EE0Ixv3yE8zrli3y7QPx4";
 var user_id;
 var always_show;
@@ -50,8 +50,8 @@ function loadSpreadsheet() {
       xhr.onload = function (oEvent) {
         arrayBuffer = xhr.response; 
         console.log(arrayBuffer);
-        if(arrayBuffer.values==null){
-          last_row=2;
+        if(!arrayBuffer.values){
+          last_row=1;
         }else{
         last_row=arrayBuffer.values.length+1;
         }
