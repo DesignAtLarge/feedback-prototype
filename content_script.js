@@ -472,7 +472,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 }
 
 $(".rubricItem--key").change(function(){
-	alert("FUCK")
+	
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 	try{
 	var arr=$(".submissionGraderPoints").html().split(" ")
@@ -854,9 +854,9 @@ const callback = function(mutationsList, observer) {
 					rubric_item=$(".rubricItem--key-applied").html()
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
-						"<div id='mydivheader'>DRAG PDF TO ME</div>"+
+						"<div id='mydivheader'>PDF SUGGESTION BOX:DRAG PDF TO ME!</div>"+
 						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
-							'<div class="suggestion_header">"Suggestions:"</div>' +
+							'<div class="suggestion_header">"Suggestions: (click on the button will do the copy, PLEASE DO THE PASTE AFTERWARDS)"</div>' +
 								  "<table class='comments_good comments_table'></table>" +
 						"</div>" + 
 					"</div>"
@@ -1337,7 +1337,6 @@ function makeCommentLink(comment){
 
 
 $('.form--textArea').change(function(){
-	alert("FUCK")
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 try{
 var arr=$(".submissionGraderPoints").html().split(" ")
@@ -1427,7 +1426,7 @@ function switchZ(event){
 
 
 $(document).change(function(){
-	alert("FUCK")
+	
 	var everything_on_pdf=new Set()
 	console.log(Array.from(everything_on_pdf).length)
 	for(var i=0;i<$('.taBox--textarea').length;i++){
@@ -1437,7 +1436,7 @@ $(document).change(function(){
 		}
 	}
 	console.log(Array.from(everything_on_pdf).length)
-	if(Array.from(everything_on_pdf).length>0){
+	if(Array.from(everything_on_pdf).length>0 && $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html() !==undefined){
 		Zdisabled=false
 		$(".actionBar--action-next").attr('disabled',false);
 	}
