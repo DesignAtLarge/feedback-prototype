@@ -47,9 +47,9 @@ var comments_inserted = {}; // list with text of comments they have inserted on 
 var being_clicked_in_pdf=new Set()
 var already_on_pdf= new Set()
 var Zdisabled=false
+var window_url=window.location.href
+
 //console.log($('.taBox--textarea'));
-
-
 
 
 // if(window.location.pathname.indexOf('assignments')>=0){
@@ -1147,69 +1147,69 @@ $(function() {
 
 	$('.actionBar--action-next').click(everyUnloading);
 
-	$(window).on('beforeunload', everyUnloading
+// 	$(window).on('beforeunload', everyUnloading
 		
-	// 	console.log("LEAVING");
-	// 	console.log("SEND PDF COMMENTS");
+// 	// 	console.log("LEAVING");
+// 	// 	console.log("SEND PDF COMMENTS");
 	
-	// 	//console.log($('.taBox--textarea')[0].innerHTML);
-	// 			var i=0;
-	// 			if($('.taBox--textarea').length>0){
-	// 			var pdf_text_list=[]
-	// 			while(i<$('.taBox--textarea').length){
-	// 				var text=$('.taBox--textarea')[i].innerHTML
-	// 				if(!being_clicked_in_pdf.has(text) && !already_on_pdf.has(text)){
-	// 				text=checkEqualTextPDF(text,full_sorted_comments)
-	// 				if(text!==undefined){
-	// 				pdf_text_list.push(text)
-	// 				}
-	// 				}
-	// 				i++;
-	// 			}
+// 	// 	//console.log($('.taBox--textarea')[0].innerHTML);
+// 	// 			var i=0;
+// 	// 			if($('.taBox--textarea').length>0){
+// 	// 			var pdf_text_list=[]
+// 	// 			while(i<$('.taBox--textarea').length){
+// 	// 				var text=$('.taBox--textarea')[i].innerHTML
+// 	// 				if(!being_clicked_in_pdf.has(text) && !already_on_pdf.has(text)){
+// 	// 				text=checkEqualTextPDF(text,full_sorted_comments)
+// 	// 				if(text!==undefined){
+// 	// 				pdf_text_list.push(text)
+// 	// 				}
+// 	// 				}
+// 	// 				i++;
+// 	// 			}
 				
-	// 			being_clicked_in_pdf.clear();
-	// 			console.log(pdf_text_list)
-	// 			if(pdf_text_list.length>0){
-	// 			chrome.runtime.sendMessage({action:"sendPDFbox",
-	// 			pdf_list: pdf_text_list,
-	// 			rubric_question:rubric_number,
-	// 			rubric_item:$(".rubricItem--key-applied").html(),
-	// 			submission_num:sub_number,
-	// 			assignment_name: ass_number,
-	// 			grader_name:user_id
+// 	// 			being_clicked_in_pdf.clear();
+// 	// 			console.log(pdf_text_list)
+// 	// 			if(pdf_text_list.length>0){
+// 	// 			chrome.runtime.sendMessage({action:"sendPDFbox",
+// 	// 			pdf_list: pdf_text_list,
+// 	// 			rubric_question:rubric_number,
+// 	// 			rubric_item:$(".rubricItem--key-applied").html(),
+// 	// 			submission_num:sub_number,
+// 	// 			assignment_name: ass_number,
+// 	// 			grader_name:user_id
 		
-	// 		},function(response) {
-	// 			console.log("logging focus: " + response);
-	// 			//console.log("RRRRRRRRR "+rubric_item);
-	// 	});
-	// 			}
+// 	// 		},function(response) {
+// 	// 			console.log("logging focus: " + response);
+// 	// 			//console.log("RRRRRRRRR "+rubric_item);
+// 	// 	});
+// 	// 			}
 			
-	// 	}
-	// 	console.log(":LOAD EVERYTHING")
-	// 	if($('input[name="category"]:checked').length==0){
-	// 		var checked="";
-	// 	}
-	// 	else{
-	// 		temp=[]
-	// 		for(var i=0;i<$('input[name="category"]:checked').length;i++){
-	// 		var name=$('input[name="category"]:checked')[i].value
-	// 		temp.push(name)
-	// 	}
-	// 	checked=temp.join();
-	// }
-	// 	chrome.runtime.sendMessage({action: "onLeaving",
-	// tbox_num:$('.taBox--textarea').length,
-	// rubric_question:rubric_name,
-	// rubric_item: $(".rubricItem--key-applied").html(),
-	// rubric_point:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
-	// rubric_text: $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children(".rubricField-description").html(),
-	// comment: $('.form--textArea').val(),
-	// submission_num:sub_number,
-	// assignment_name: ass_name,
-	// grader_name:grader_name,
-	// check_box_status:checked
-	// });
-  );
+// 	// 	}
+// 	// 	console.log(":LOAD EVERYTHING")
+// 	// 	if($('input[name="category"]:checked').length==0){
+// 	// 		var checked="";
+// 	// 	}
+// 	// 	else{
+// 	// 		temp=[]
+// 	// 		for(var i=0;i<$('input[name="category"]:checked').length;i++){
+// 	// 		var name=$('input[name="category"]:checked')[i].value
+// 	// 		temp.push(name)
+// 	// 	}
+// 	// 	checked=temp.join();
+// 	// }
+// 	// 	chrome.runtime.sendMessage({action: "onLeaving",
+// 	// tbox_num:$('.taBox--textarea').length,
+// 	// rubric_question:rubric_name,
+// 	// rubric_item: $(".rubricItem--key-applied").html(),
+// 	// rubric_point:$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html(),
+// 	// rubric_text: $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children(".rubricField-description").html(),
+// 	// comment: $('.form--textArea').val(),
+// 	// submission_num:sub_number,
+// 	// assignment_name: ass_name,
+// 	// grader_name:grader_name,
+// 	// check_box_status:checked
+// 	// });
+//   );
 	// else {
 	// 	// tell chrome we are NOT on a grading page
 	// 	chrome.runtime.sendMessage({action: "onOtherPage"});

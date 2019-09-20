@@ -10,6 +10,39 @@ var on_grading_page;
 var store_rubric_item;
 var last_row=1;//fetch the last row in the spreadsheets, used for the id field
 
+//UPDATE: here is some number magic here to auto refresh the page when you go to the next
+//page for grading(by pressing Z or click next ungraded),
+//refreshing the page by adding new rubric items/press refresh in chromewon't cause unstoppable refresh
+//as I said, it's number magic, so I can't gurantee it works smoothly for everyone's chrome
+//I will push this change to github but as for now, I won't add this as an update to extension in
+//chrome store
+var log_time=0
+var old_url=""
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  let tab_url=tab.url
+
+  if(tab_url.indexOf("submissions")>0 && tab_url.indexOf("not_grouped")==-1){
+    log_time++
+    console.log(log_time)
+    let url_arr=tab_url.split("/")
+    let temp_num=url_arr[url_arr.length-2]
+    //if(log_time==3){
+    if(log_time%3==0){
+    console.log(old_url)
+    //log_time=log_time-6
+    if(old_url!==temp_num){
+    old_url=temp_num
+    console.log(log_time)  
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.reload(tabs[0].id);
+    });
+  }
+  }
+  }
+});
+
+
+
 function loadSpreadsheet() {
   console.log("loadding spreadsheet now.....")
   if (chrome.identity === undefined) {
