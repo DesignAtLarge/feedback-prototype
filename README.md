@@ -12,8 +12,12 @@ And also checkout the instruction video online.
 
 client id  for online version: 66462531215-1prsgpfbnfl2mf88e27165g1vcv70pjl.apps.googleusercontent.com
 
-client id for debug ( in Zhaoyi's Macbook) here: 66462531215-mgror68snbk04d88ol3t4i7rnh0ul1j8.apps.googleusercontent.com
+client id for debug ( in Zhaoyi's Macbook) here: 
+66462531215-mgror68snbk04d88ol3t4i7rnh0ul1j8.apps.googleusercontent.com
+
+If you would like to pull from this repo and do some debug in your local enviroment, remember to
+register in google's API console or ask me to authenticate you in my console and get an client id for manifest.json.
 
 NOTICE: For first time users, if the chrome says the extension is unsafe, in that page, go to "advance" and let the chrome know you
-will go unsafe. This extension is safe, this is not something you would like to see only in the incognito mode.
+will go unsafe. This extension is safe, this is not something you would like to see only in the chrome incognito mode.
 
