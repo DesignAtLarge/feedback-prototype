@@ -72,7 +72,7 @@ function loadSpreadsheet() {
       };
 
       xhr.open("GET", 
-        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/F19!A2:K10000",
+        "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + "/values/F19!A2:K100000",
         true);
 
       xhr.setRequestHeader('Authorization','Bearer ' + token);
@@ -191,39 +191,39 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
 
         xhr2.open("POST", 
           "https://sheets.googleapis.com/v4/spreadsheets/" + event_sheet_id + 
-            "/values/A10!A2:H100000:append?valueInputOption=RAW",
+            "/values/A10!A2:H1000000:append?valueInputOption=RAW",
           true);
         xhr2.setRequestHeader('Authorization','Bearer ' + token);
         xhr2.setRequestHeader("Content-type", "application/json");
 
         if (action == "comment") {
           xhr2.send('{' + 
-            '"range": "A10!A2:H100000",' + 
+            '"range": "A10!A2:H1000000",' + 
             '"values": [[ "' + new Date().toString() + '", "comment", "' + comment_info[0] + '", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show + '", "' + comment + '", "'+submission_num+
                   '","" ]]' + 
           '}');
         } else if (action == "change setting") {
           xhr2.send('{' + 
-            '"range": "A10!A2:H100000",' + 
+            '"range": "A10!A2:H1000000",' + 
             '"values": [[ "' + new Date().toString() + '", "change setting", "", "' + user_id + '", "", "", "' + always_show + 
             '", "","'+submission_num+'","" ]]' + 
           '}');
         } else if (action == "show suggestions" || action == "hide suggestions" || action == "focus") {
           xhr2.send('{' + 
-            '"range": "A10!A2:H100000",' + 
+            '"range": "A10!A2:H1000000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "' + rubric_item + '", "' + always_show +'", "","'+submission_num+'","" ]]'+
           '}');
         } else if (action == "gradescope focus") {
           xhr2.send('{' + 
-            '"range": "A10!A2:H100000",' + 
+            '"range": "A10!A2:H1000000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "", "' + always_show +'", "","'+submission_num+'","" ]]' + 
           '}');
         }else if (action == "pdf focus") {
           xhr2.send('{' + 
-            '"range": "A10!A2:H100000",' + 
+            '"range": "A10!A2:H1000000",' + 
             '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                   rubric_question + '", "", "' + always_show + '", "","'+submission_num+'","" ]]'  + 
           '}');
@@ -231,7 +231,7 @@ function updateSheets(action, submission_num,rubric_question, rubric_item, comme
           console.log("ON LEAVINGGGGGG")
           console.log(rubric_item)
           xhr2.send('{' + 
-          '"range": "A10!A2:H100000",' + 
+          '"range": "A10!A2:H1000000",' + 
           '"values": [[ "' + new Date().toString() + '", "' + action + '", "", "' + user_id + '", "' + 
                 rubric_question + '", "' + rubric_item + '", "'  + always_show +'", "'+comment+'", "' +submission_num+  '", "'+tbox_num+'", "'+assignment_name+'", "'
                 +check_box_status+'", "' +grader_name+'", "'+rubric_point+'", "'+rubric_text+'","" ]]'  + 
@@ -395,7 +395,7 @@ function appendCommentsToSheet(values) {
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/F19!A2:L10000:append?valueInputOption=RAW",
+          "/values/F19!A2:L100000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
@@ -453,7 +453,7 @@ if (values != '"values": ]') {
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/F19!A2:L10000:append?valueInputOption=RAW",
+          "/values/F19!A2:L100000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
@@ -493,7 +493,7 @@ function appendStuentSubmission(sub_number,student_name_list){
 
       xhr.open("POST", 
         "https://sheets.googleapis.com/v4/spreadsheets/" + comment_sheet_id + 
-          "/values/submission!A2:L10000:append?valueInputOption=RAW",
+          "/values/submission!A2:L100000:append?valueInputOption=RAW",
         true);
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
