@@ -932,7 +932,7 @@ const callback = function(mutationsList, observer) {
 				}
 				var id=$(mutation.target).html();
 				console.log("IIID  dis appear is: "+id);
-				if (!$('suggestion_container_'+id).is(":visible")) {
+				if (!$('suggestion_container_'+id).is(":visible") && !always_show) {
 					toggleSuggestionBox(id);
 				}
 			}

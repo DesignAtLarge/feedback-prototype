@@ -400,7 +400,7 @@ function appendCommentsToSheet(values) {
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "F19!A2:L10000",' + 
+        '"range": "F19!A2:L100000",' + 
         values + 
       '}');
     }
@@ -458,7 +458,7 @@ if (values != '"values": ]') {
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "F19!A2:L10000",' + 
+        '"range": "F19!A2:L100000",' + 
         values + 
       '}');
     }
@@ -498,7 +498,7 @@ function appendStuentSubmission(sub_number,student_name_list){
       xhr.setRequestHeader('Authorization','Bearer ' + token);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.send('{' + 
-        '"range": "submission!A2:L10000",' + 
+        '"range": "submission!A2:L100000",' + 
         '"values": [[ "' + sub_number + '", "' + res_string+'","" ]]'  + 
 '}');
     }
