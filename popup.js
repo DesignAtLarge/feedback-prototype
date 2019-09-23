@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.storage.local.get(null, function(items) {
     if (!items.user_id) {
       user_id = Math.random().toString(36) + new Date().getTime();
-      always_show = (Math.random() < 0.5);
+      always_show=false;
+      // always_show = (Math.random() < 0.5);
       console.log("always show: " + always_show);
       chrome.storage.local.set({user_id: user_id, always_show: always_show});
     } else if (items.always_show == undefined) {

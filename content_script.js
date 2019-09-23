@@ -1338,7 +1338,16 @@ function makeCommentLink(comment){
 
 $('.form--textArea').change(function(){
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
-try{
+	if(rubric_item_score==undefined){
+		let text1=$('.form--textArea').val()
+		if(text1!==undefined || text1!==""){
+			Zdisabled=false
+			$(".actionBar--action-next").attr('disabled',false);
+			return
+		}
+	}
+
+	try{
 var arr=$(".submissionGraderPoints").html().split(" ")
 }
 catch(error){
@@ -1347,11 +1356,7 @@ catch(error){
 arr.pop()
 var total_score=arr.pop()
 var res_total="+"+total_score
-if(rubric_item_score==undefined){
-	Zdisabled=true
-	$(".actionBar--action-next").attr('disabled',true);
-	return
-}
+
 if(rubric_item_score !=="-0.0"){
 	if(rubric_item_score.substring(0,1)!="-"){
 		if(rubric_item_score==res_total){
@@ -1491,6 +1496,25 @@ $(document).change(function(){
 		}
 })
 
+
+$(document).change(function(){
+	if($('taBox--displayText').length>0){
+		Zdisabled=false
+		$(".actionBar--action-next").attr('disabled',false)
+	}
+	if($(".rubricItem--key-applied").length==0){
+		Zdisabled=true
+		$(".actionBar--action-next").attr('disabled',true)
+	}
+})
+
+
+$(document).ready(function(){
+	if($('taBox--displayText').length>0){
+		Zdisabled=false
+		$(".actionBar--action-next").attr('disabled',false)
+	}
+})
 
 // $(document).change(function(){
 // 	if(Zdisabled){
