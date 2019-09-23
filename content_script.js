@@ -862,11 +862,12 @@ const callback = function(mutationsList, observer) {
         else if (mutation.type === 'attributes') {
 			var classList = mutation.target.className;
 			console.log(classList)
+			console.log(mutation.target)
 			if(classList.indexOf("rubricItem--key-applied")>=0){
 					// let len_rb=$(".rubricItem--key-applied").length-1
 					// let item_rb=$(".rubricItem--key-applied")[len_rb]
 					// console.log(item_rb)
-					rubric_item=$(".rubricItem--key-applied").html()
+					rubric_item=mutation.target.innerHTML
 					console.log(rubric_item)
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
@@ -884,7 +885,7 @@ const callback = function(mutationsList, observer) {
 					var total_score=arr.pop()
 					var res_total="+"+total_score
 					if(rubric_item_score !=="-0.0"){
-						if($('.tabox--textarea').length>0){
+						if($('.tabox--textarea').val()!==""){
 							Zdisabled=false
 							$(".actionBar--action-next").attr('disabled',false);
 						}
@@ -894,13 +895,18 @@ const callback = function(mutationsList, observer) {
 								$(".actionBar--action-next").attr('disabled',false);
 								
 							}
-						}
+						}else{
 						Zdisabled=true
 						$(".actionBar--action-next").attr('disabled',true);
+						}
 					}else{
 						Zdisabled=false
 						$(".actionBar--action-next").attr('disabled',false);
 						
+					}
+					if(rubric_item_score==undefined && $(".form--textArea").val()!=="" && $(".taBox--textarea").length>0){
+						Zdisabled=false
+						$(".actionBar--action-next").attr('disabled',false);
 					}
 
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
@@ -912,7 +918,7 @@ const callback = function(mutationsList, observer) {
 					}
 					
 				if(!always_show){
-				var id=$('.rubricItem--key-applied').html();
+				var id=mutation.target.innerHTML;
 				console.log("IIID is: "+id);
 				if (!$('suggestion_container_'+id).is(":visible")) {
 					toggleSuggestionBox(id);
@@ -1521,7 +1527,6 @@ $(document).change(function(){
 
 $(document).change(function(){
 	if($('.taBox--displayText').length>0 ||$(".form--textArea").val()!==""){
-		
 		Zdisabled=false
 		$(".actionBar--action-next").attr('disabled',false)
 	}
@@ -1536,3 +1541,4 @@ $(document).ready(function(){
 		$(".actionBar--action-next").attr('disabled',false)
 	}
 });
+
