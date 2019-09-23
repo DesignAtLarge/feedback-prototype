@@ -483,7 +483,7 @@ $(".rubricItem--key").change(function(){
 	arr.pop()
 	var total_score=arr.pop()
 	var res_total="+"+total_score
-	if(rubric_item_score==undefined){
+	if(rubric_item_score==undefined && $(".taBox--displayText").length==0 && $(".form--textArea").val()=="" ){
 		Zdisabled=true
 		$(".actionBar--action-next").attr('disabled',true);
 		return
@@ -793,13 +793,19 @@ $(document).ready(function(){
 
 
 $(document).ready(function(){
+	if(rubric_item_score==undefined && $(".form--textArea").val()=="" && $('.taBox--displayText').length==0){
+		Zdisabled=true
+		$(".actionBar--action-next").attr('disabled',true);
+		return
+	}
 var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
-if(rubric_item_score==undefined){
-	Zdisabled=true
-	$(".actionBar--action-next").attr('disabled',true);
-	return
-}
-var arr=$(".submissionGraderPoints").html().split(" ")
+try{
+	var arr=$(".submissionGraderPoints").html().split(" ")
+	}
+	catch(error){
+		return
+	}
+//var arr=$(".submissionGraderPoints").html().split(" ")
 arr.pop()
 var total_score=arr.pop()
 var res_total="+"+total_score
@@ -807,6 +813,7 @@ console.log(rubric_item_score)
 console.log(total_score)
 console.log(res_total)
 if(rubric_item_score !=="-0.0"){
+	try{
 	if(rubric_item_score.substring(0,1)!="-"){
 		if(rubric_item_score==res_total){
 			Zdisabled=false
@@ -814,6 +821,10 @@ if(rubric_item_score !=="-0.0"){
 			return
 		}
 	}
+}
+catch(error){
+	return
+}
 	var text=$('.form--textArea').val()
 	console.log(text)
 	if(text=="" ||$('.taBox--textarea').length==0){
@@ -850,8 +861,13 @@ const callback = function(mutationsList, observer) {
         }
         else if (mutation.type === 'attributes') {
 			var classList = mutation.target.className;
+			console.log(classList)
 			if(classList.indexOf("rubricItem--key-applied")>=0){
+					// let len_rb=$(".rubricItem--key-applied").length-1
+					// let item_rb=$(".rubricItem--key-applied")[len_rb]
+					// console.log(item_rb)
 					rubric_item=$(".rubricItem--key-applied").html()
+					console.log(rubric_item)
 					$('.pageViewerControls.u-pointerEventsNone').append($(
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
 						"<div id='mydivheader'>PDF SUGGESTION BOX:DRAG PDF TO ME!</div>"+
@@ -888,7 +904,12 @@ const callback = function(mutationsList, observer) {
 					}
 
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
+					try{
 					storeAndPrintComments(rubric_item,full_sorted_comments[rubric_item-1], rubric_item-1, rubric_item-1, false,true);
+					}
+					catch(error){
+						console.log(error)
+					}
 					
 				if(!always_show){
 				var id=$('.rubricItem--key-applied').html();
@@ -929,24 +950,24 @@ observer.observe(targetNode[i], config);
 	// $(".comment_view_text").keydown(function() { 
 	// 	console.log("this id "+this.id);
 	// 	updateCommentBox(this.id); });
-	$(".form--textArea").focus(function() { 
-		//console.log(this);
+	// $(".form--textArea").focus(function() { 
+	// 	//console.log(this);
 
-		//I assume that rubric_item variable is the score like -0.5
-		//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
-		//first step to make the ONLY comment box available
-		var rubric_item=$(".rubricItem--key-applied").html();
-		rubric_item_applied=rubric_item;
-		// tell chrome to log the event that we just clicked the comment box
-		chrome.runtime.sendMessage({action: "logFocus",
-									rubric_question: rubric_name,
-									rubric_item: rubric_item,
-									submission_num:sub_number
-			}, function(response) {
-				console.log("logging focus: " + response);
-				//console.log("RRRRRRRRR "+rubric_item);
-		});
-	});
+	// 	//I assume that rubric_item variable is the score like -0.5
+	// 	//var rubric_item = $(this).parents("li").find(".rubricItem--pointsAndDescription").find(".rubricField-points").html();
+	// 	//first step to make the ONLY comment box available
+	// 	var rubric_item=$(".rubricItem--key-applied").html();
+	// 	rubric_item_applied=rubric_item;
+	// 	// tell chrome to log the event that we just clicked the comment box
+	// 	chrome.runtime.sendMessage({action: "logFocus",
+	// 								rubric_question: rubric_name,
+	// 								rubric_item: rubric_item,
+	// 								submission_num:sub_number
+	// 		}, function(response) {
+	// 			console.log("logging focus: " + response);
+	// 			//console.log("RRRRRRRRR "+rubric_item);
+	// 	});
+	// });
 
 	// $("taBox--textarea").focus(function(){
 	// 	//var rubric_item=$(".rubricItem--key-applied").html();
@@ -1338,7 +1359,8 @@ function makeCommentLink(comment){
 
 $('.form--textArea').change(function(){
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
-	if(rubric_item_score==undefined){
+
+if(rubric_item_score==undefined){
 		let text1=$('.form--textArea').val()
 		if(text1!==undefined || text1!==""){
 			Zdisabled=false
@@ -1347,7 +1369,7 @@ $('.form--textArea').change(function(){
 		}
 	}
 
-	try{
+try{
 var arr=$(".submissionGraderPoints").html().split(" ")
 }
 catch(error){
@@ -1498,37 +1520,19 @@ $(document).change(function(){
 
 
 $(document).change(function(){
-	if($('taBox--displayText').length>0){
+	if($('.taBox--displayText').length>0 ||$(".form--textArea").val()!==""){
+		
 		Zdisabled=false
 		$(".actionBar--action-next").attr('disabled',false)
 	}
-	if($(".rubricItem--key-applied").length==0){
-		Zdisabled=true
-		$(".actionBar--action-next").attr('disabled',true)
-	}
-})
+
+});
 
 
 $(document).ready(function(){
-	if($('taBox--displayText').length>0){
+	if($('.taBox--displayText').length>0){
+		
 		Zdisabled=false
 		$(".actionBar--action-next").attr('disabled',false)
 	}
-})
-
-// $(document).change(function(){
-// 	if(Zdisabled){
-// 		alert("TRUE")
-// 		$(".actionBar--action-next").attr('disabled',true);
-// 	}else{
-// 		$(".actionBar--action-next").attr('disabled',true);
-// 	}
-// 	// var count=$('input[name="category"]:checked').length;
-// 	// if(count==3){
-// 	// 	$(".actionBar--action-next").attr('disabled',false);
-// 	// }else{
-// 	// 	$(".actionBar--action-next").attr('disabled',true);
-// 	// }
-
-
-// });
+});

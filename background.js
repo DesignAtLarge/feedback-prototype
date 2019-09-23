@@ -549,17 +549,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.action == "logShowSetting") {
     updateSheets("change setting");
     sendResponse("event logged");
-  } else if (request.action == "logSuggestionSee") {
-    updateSheets("show suggestions", request.submission_num,request.rubric_question, request.rubric_item);
-    sendResponse("event logged");
-  } else if (request.action == "logSuggestionHide") {
-    updateSheets("hide suggestions", request.submission_num,request.rubric_question, request.rubric_item);
-    sendResponse("event logged");
-  } else if (request.action == "logFocus") {
+  } 
+  // else if (request.action == "logSuggestionSee") {
+  //   updateSheets("show suggestions", request.submission_num,request.rubric_question, request.rubric_item);
+  //   sendResponse("event logged");
+  // } 
+  // else if (request.action == "logSuggestionHide") {
+  //   updateSheets("hide suggestions", request.submission_num,request.rubric_question, request.rubric_item);
+  //   sendResponse("event logged");
+  // } 
+  // else if (request.action == "logFocus") {
   
-    updateSheets("focus", request.submission_num,request.rubric_question, request.rubric_item);
-    sendResponse("event logged");
-  } else if (request.action == "logGradescopeFocus") {
+  //   updateSheets("focus", request.submission_num,request.rubric_question, request.rubric_item);
+  //   sendResponse("event logged");
+  // } 
+  else if (request.action == "logGradescopeFocus") {
     updateSheets("gradescope focus", request.submission_num,request.rubric_question);
     sendResponse("event logged");
   } else if (request.action == "onGradingPage") {
