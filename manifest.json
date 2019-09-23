@@ -3,7 +3,7 @@
 
   "name": "Feedback Prototype",
   "description": "Suggests previous gradescope comments for feedback",
-  "version": "8.4.8",
+  "version": "8.4.9",
 
   "browser_action": {
     "default_popup": "popup.html"
@@ -45,7 +45,7 @@
     "persistent": false
   },
   "oauth2": {
-    "client_id":"66462531215-mgror68snbk04d88ol3t4i7rnh0ul1j8.apps.googleusercontent.com",
+    "client_id":"66462531215-1prsgpfbnfl2mf88e27165g1vcv70pjl.apps.googleusercontent.com",
     "scopes": [
       "https://spreadsheets.google.com/feeds"
     ]

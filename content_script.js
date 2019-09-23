@@ -885,11 +885,12 @@ const callback = function(mutationsList, observer) {
 					var total_score=arr.pop()
 					var res_total="+"+total_score
 					if(rubric_item_score !=="-0.0"){
-						if($('.tabox--textarea').val()!==""){
+						if($('.tabox--textarea').val()!=="" || $(".taBox--displayText").length>0){
+							
 							Zdisabled=false
 							$(".actionBar--action-next").attr('disabled',false);
 						}
-						if(rubric_item_score.substring(0,1)!="-"){
+						else if(rubric_item_score.substring(0,1)!="-"){
 							if(rubric_item_score==res_total){
 								Zdisabled=false
 								$(".actionBar--action-next").attr('disabled',false);
@@ -1103,15 +1104,15 @@ $(function() {
 
 		 });
 
-		$(".form--textArea").focus(function() { 
-			// tell chrome to log the event that we just clicked the comment box
-			chrome.runtime.sendMessage({action: "logGradescopeFocus",
-										rubric_question: rubric_name,
-										submission_num:sub_number
-				}, function(response) {
-					console.log("logging gradescope focus: " + response);
-			});
-		});
+		// $(".form--textArea").focus(function() { 
+		// 	// tell chrome to log the event that we just clicked the comment box
+		// 	chrome.runtime.sendMessage({action: "logGradescopeFocus",
+		// 								rubric_question: rubric_name,
+		// 								submission_num:sub_number
+		// 		}, function(response) {
+		// 			console.log("logging gradescope focus: " + response);
+		// 	});
+		// });
 
 		// wait to receive the comments from spreadsheet
 		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -1367,6 +1368,7 @@ $('.form--textArea').change(function(){
 	var rubric_item_score=$(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html();
 
 if(rubric_item_score==undefined){
+		
 		let text1=$('.form--textArea').val()
 		if(text1!==undefined || text1!==""){
 			Zdisabled=false

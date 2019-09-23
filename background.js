@@ -563,10 +563,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   //   updateSheets("focus", request.submission_num,request.rubric_question, request.rubric_item);
   //   sendResponse("event logged");
   // } 
-  else if (request.action == "logGradescopeFocus") {
-    updateSheets("gradescope focus", request.submission_num,request.rubric_question);
-    sendResponse("event logged");
-  } else if (request.action == "onGradingPage") {
+  // else if (request.action == "logGradescopeFocus") {
+  //   updateSheets("gradescope focus", request.submission_num,request.rubric_question);
+  //   sendResponse("event logged");
+  // } 
+  else if (request.action == "onGradingPage") {
     on_grading_page = true;
   } else if (request.action == "onLeaving") {
     //NOTICE: SINCE WE ARE ALWAYS USING GRADING PAGE, ongrading is useless
