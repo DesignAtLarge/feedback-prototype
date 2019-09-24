@@ -1450,9 +1450,7 @@ function switchZ(event){
 }else if(keycode=='z' &&!Zdisabled){
 	if(!$('.form--textArea').is(':focus')  && !$('taBox--textarea').is(':focus')){
 		var text=$('.form--textArea').val()
-		if(text==""||text==undefined){
-			everyUnloading()
-		}
+		everyUnloading()
 		
 	}
 	// $(document).unbind();
