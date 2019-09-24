@@ -535,6 +535,10 @@ function updateCommentViews(view_id) {
 		}
 		console.log("got updated comments: ")
 		console.log(comment_text);
+		if(comment_text!==""||comment_text!==undefined){
+			Zdisabled=false
+			$(".actionBar--action-next").attr('disabled',false)
+		}
 
 		chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
 			comments_rubric_number: rubric_number, saved: false,rubric_item:rubric_item_applied});
@@ -1097,6 +1101,10 @@ $(function() {
 				}
 				console.log("got updated comments: ")
 				console.log(comment_text);
+				if(comment_text!==""||comment_text!==undefined){
+					Zdisabled=false
+					$(".actionBar--action-next").attr('disabled',false)
+				}
 		
 				chrome.storage.local.set({comment_text: comment_text, comments_inserted: comments_inserted, 
 					comments_rubric_number: rubric_number, saved: false,rubric_item:rubric_item_applied});
