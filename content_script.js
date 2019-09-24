@@ -267,7 +267,7 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
       }
 	});
 	
-
+	//PUT ONLY TOP 20 COMMENTS inside the box
 
 
     //A10: put non-0 comments first (ones specific to this rubric question)
@@ -535,7 +535,14 @@ function updateCommentViews(view_id) {
 		}
 		console.log("got updated comments: ")
 		console.log(comment_text);
-		if(comment_text!==""||comment_text!==undefined){
+		if(comment_text!==""){
+			Zdisabled=false
+			$(".actionBar--action-next").attr('disabled',false)
+		}else if(comment_text=="" && $('.taBox--textarea').length==0){
+			Zdisabled=true
+			$(".actionBar--action-next").attr('disabled',true)
+
+		}else{
 			Zdisabled=false
 			$(".actionBar--action-next").attr('disabled',false)
 		}
@@ -668,7 +675,7 @@ function injectSuggestions() {
 
 $(
 "<div class=pdf_comments_display>"+
-"<p style='font-family:verdana; color:blue'>Comments you put in on PDF:</p>"+
+"<p style='font-family:verdana; color:blue'>Comments you put directly on the PDF:</p>"+
 "</div>"
 
 ).insertAfter(".form--textArea")
@@ -687,7 +694,7 @@ $(document).ready(function(){
 
 	$(
 		"<div class='category_selection'>"+
-		"<span  id ='ins_check' style='color:red'>Check boxes below if your comments on PDF or in comment box meet the critiria. you can press 'z' for next question as long as you put in comments for not full marks rubric items</span>"+
+		"<span  id ='ins_check' style='color:red'>Your feedback should be specific, actionable, and justified. Check the boxes below if your comments meet the criteria. You can press 'z' for the next question as long as you write a comment if the student did not receive full credit.</span>"+
 		"<br/>"+
 		"<input type='checkbox' class='catCheck--spec' name='category' value='is_specific' style='height:10px; width:10px;'>Is specific"+
 		"<input type='checkbox' class='catCheck--act' name='category' value='is_actionable' style='height:10px; width:10px;'>Is actionable"+
@@ -744,26 +751,26 @@ $(document).ready(function(){
 					
 				}else{
 					$('#ins_check').css('color','red');
-					$('#ins_check').text('Your comment can be more justified.');
+					$('#ins_check').text('Please add a justification for your comment');
 				}
 			}else if($('input[class="catCheck--just"]').is(':checked')){
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment can be more actionable.');
+				$('#ins_check').text('Please add a concrete suggestion to your comment to make it actionable');
 			}else{
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment could be improved to be more actionable and justified.');
+				$('#ins_check').text('Please add a concrete suggestion to your comment to make it actionable');
 			}
 		}else if($('input[class="catCheck--act"]').is(':checked')){
 			if($('input[class="catCheck--just"]').is(':checked')){
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is actionable and justified, just be specific.');
+				$('#ins_check').text('Please add a concrete suggestion to your comment to make it actionable');
 			}else{
 				$('#ins_check').css('color','red');
-				$('#ins_check').text('Your comment is actionable only, make it better.');
+				$('#ins_check').text('Please add a concrete suggestion to your comment to make it actionable');
 			}
 		}else if($('input[class="catCheck--just"]').is(':checked')){
 			$('#ins_check').css('color','red');
-			$('#ins_check').text('Your comment is justified only, make it better.');
+			$('#ins_check').text('Please add a concrete suggestion to your comment to make it actionable');
 		}else{
 			$('#ins_check').css('color','red');
 			$('#ins_check').text('If you believe your comment meets the criteria listed below, check them.');
@@ -877,7 +884,7 @@ const callback = function(mutationsList, observer) {
 						"<div id='suggestion_container_pdf_" + rubric_item + "' class= 'suggestion_container_pdf'>" +
 						"<div id='mydivheader'>PDF SUGGESTION BOX:DRAG PDF TO ME!</div>"+
 						"<div id='suggestion_box_pdf_" + rubric_item + "' class='rubric-comments suggestion_box_pdf' style='overflow-y:scroll'>" + 
-							'<div class="suggestion_header">"Suggestions: (click on the button will do the copy, PLEASE DO THE PASTE AFTERWARDS)"</div>' +
+							'<div class="suggestion_header">"Suggestions: Clicking the button by the suggested comment will copy it. Simply paste it in your comment box after"</div>' +
 								  "<table class='comments_good comments_table'></table>" +
 						"</div>" + 
 					"</div>"
@@ -889,7 +896,8 @@ const callback = function(mutationsList, observer) {
 					var total_score=arr.pop()
 					var res_total="+"+total_score
 					if(rubric_item_score !=="-0.0"){
-						if($('.tabox--textarea').val()!=="" || $(".taBox--displayText").length>0){
+						
+						if($('.form--textArea').val()!=="" || $(".taBox--displayText").length>0){
 							
 							Zdisabled=false
 							$(".actionBar--action-next").attr('disabled',false);
@@ -901,6 +909,7 @@ const callback = function(mutationsList, observer) {
 								
 							}
 						}else{
+						
 						Zdisabled=true
 						$(".actionBar--action-next").attr('disabled',true);
 						}
@@ -909,9 +918,11 @@ const callback = function(mutationsList, observer) {
 						$(".actionBar--action-next").attr('disabled',false);
 						
 					}
-					if(rubric_item_score==undefined && $(".form--textArea").val()!=="" && $(".taBox--textarea").length>0){
+					if(rubric_item_score==undefined){
+						if($(".form--textArea").val()!==""|| $(".taBox--textarea").length>0){
 						Zdisabled=false
 						$(".actionBar--action-next").attr('disabled',false);
+						}
 					}
 
 					//$("<div class='temp' style='border-style: dashed; border: 1px solid red;'>NAIVEEEEEE</div>").insertAfter('.taBox--textarea');
@@ -1101,7 +1112,14 @@ $(function() {
 				}
 				console.log("got updated comments: ")
 				console.log(comment_text);
-				if(comment_text!==""||comment_text!==undefined){
+				if(comment_text!==""){
+					Zdisabled=false
+					$(".actionBar--action-next").attr('disabled',false)
+				}else if(comment_text=="" && $('.taBox--textarea').length==0){
+					Zdisabled=true
+					$(".actionBar--action-next").attr('disabled',true)
+
+				}else{
 					Zdisabled=false
 					$(".actionBar--action-next").attr('disabled',false)
 				}
@@ -1378,7 +1396,7 @@ $('.form--textArea').change(function(){
 if(rubric_item_score==undefined){
 		
 		let text1=$('.form--textArea').val()
-		if(text1!==undefined || text1!==""){
+		if(text1!==""){
 			Zdisabled=false
 			$(".actionBar--action-next").attr('disabled',false);
 			return
@@ -1470,6 +1488,7 @@ $(document).change(function(){
 	
 	var everything_on_pdf=new Set()
 	console.log(Array.from(everything_on_pdf).length)
+
 	for(var i=0;i<$('.taBox--textarea').length;i++){
 		var text=$('.taBox--textarea')[i].innerHTML
 		if(text!==""){
@@ -1477,9 +1496,12 @@ $(document).change(function(){
 		}
 	}
 	console.log(Array.from(everything_on_pdf).length)
-	if(Array.from(everything_on_pdf).length>0 && $(".rubricItem--key-applied").siblings(".rubricItem--pointsAndDescription").children("button").html() !==undefined){
+	if(Array.from(everything_on_pdf).length==0 && $(".form--textArea").val().length==0){
+		Zdisabled=true
+		$(".actionBar--action-next").attr('disabled',true)
+	}else{
 		Zdisabled=false
-		$(".actionBar--action-next").attr('disabled',false);
+		$(".actionBar--action-next").attr('disabled',false)
 	}
 	//more comments on the pdf not on the right
 	if($('.anchor_on_right').length<$('.taBox--textarea').length){
@@ -1493,6 +1515,7 @@ $(document).change(function(){
 		var text=Array.from(diff)[0]
 		console.log(text)
 		$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
+
 			// var text=$('.anchor_on_right')[j].innnerHTML;
 			// if(!everything_on_pdf.has(text)){
 			// 	$('.pdf_comments_display').append("<span class='anchor_on_right'>"+text+"</span>"+"<br/>")
@@ -1533,13 +1556,15 @@ $(document).change(function(){
 })
 
 
-$(document).change(function(){
-	if($('.taBox--displayText').length>0 ||$(".form--textArea").val()!==""){
-		Zdisabled=false
-		$(".actionBar--action-next").attr('disabled',false)
-	}
+// $(document).change(function(){
+	
+// 	if($('.taBox--displayText').length>0 ||$(".form--textArea").val()!==""){
+// 		alert("FUCK")
+// 		Zdisabled=false
+// 		$(".actionBar--action-next").attr('disabled',false)
+// 	}
 
-});
+// });
 
 
 $(document).ready(function(){
@@ -1549,4 +1574,6 @@ $(document).ready(function(){
 		$(".actionBar--action-next").attr('disabled',false)
 	}
 });
+
+
 
