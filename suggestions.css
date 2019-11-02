@@ -97,15 +97,15 @@ a[disabled="disabled"] {
   position: absolute;
   z-index: 9;
   padding-top: 80px;
-  padding-left: 30px;
-  width:350px;
+  padding-left: 0px;
+  width:190px;
 }
 
 #mydivheader {
   padding: 10px;
   cursor: move;
   z-index: 10;
-  width:350px;
+  width:190px;
   background-color: #2196F3;
   color: #fff;
 }
@@ -118,7 +118,7 @@ a[disabled="disabled"] {
   background-color: rgb(248, 248, 245) !important;
   position: relative !important;
    pointer-events: auto !important;
-  width:350px;
+  width:190px;
 }
 
 .btn_pdf{

@@ -230,26 +230,26 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
 
 
 	//sort the comments by the first word(move them together)
-	comments= comments.sort(function(info1,info2){
-		var nameA= (info1[5].split(' '))[0].toLowerCase();
-		var nameB = (info2[5].split(' '))[0].toLowerCase();
-		if(nameA === nameB) return 0; 
-    	return nameA > nameB ? 1 : -1;
+	// comments= comments.sort(function(info1,info2){
+	// 	var nameA= (info1[5].split(' '))[0].toLowerCase();
+	// 	var nameB = (info2[5].split(' '))[0].toLowerCase();
+	// 	if(nameA === nameB) return 0; 
+    // 	return nameA > nameB ? 1 : -1;
 
-	});
+	// });
 
-	// sort comments ascending by length
-    comments = comments.sort(function(info1, info2) {
-      var length1 = parseInt(info1[6]);
-      var length2 = parseInt(info2[6]);
-      if (length1 < length2) {
-        return -1;
-      } else if (length1 == length2) {
-        return 0;
-      } else {
-        return 1;
-      }
-    });
+	// // sort comments ascending by length
+    // comments = comments.sort(function(info1, info2) {
+    //   var length1 = parseInt(info1[6]);
+    //   var length2 = parseInt(info2[6]);
+    //   if (length1 < length2) {
+    //     return -1;
+    //   } else if (length1 == length2) {
+    //     return 0;
+    //   } else {
+    //     return 1;
+    //   }
+    // });
 
 
     //console.log(comments);
@@ -266,7 +266,19 @@ function storeAndPrintComments(rub,comments, id_num, index, searching,PDF) {
         return 1;
       }
 	});
-	
+
+
+    comments = comments.sort(function(info1, info2) {
+		var length1 = parseInt(info1[6]);
+		var length2 = parseInt(info2[6]);
+		if (length1 < length2) {
+		  return -1;
+		} else if (length1 == length2) {
+		  return 0;
+		} else {
+		  return 1;
+		}
+	  });
 	//PUT ONLY TOP 20 COMMENTS inside the box
 
 
